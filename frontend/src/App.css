@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Notable&family=Oswald:wght@200..700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
+  overflow: hidden;
+  font-family: "Oswald", sans-serif;
+  margin: 0;
+  scroll-behavior: smooth;
+}
+
+.background-video {
+  height: 100%;
+  width: 177.77777778vh; /* 100 * 16 / 9 */
+  min-width: 100%;
+  min-height: 56.25vw; /* 100 * 9 / 16 */
+}
+
+#image-head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+#image-head img {
+  max-width: 100%;
+  height: auto;
+  padding: 20px; /* Adjust padding if necessary */
+}
+
+/* General Navigation Styles */
+nav {
+  filter: invert(100%);
+  background-color: transparent;
+  padding: 1em;
+}
+
+#desktop-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1em;
+  padding: 1em;
+}
+
+#desktop-nav .nav-links-app {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+#desktop-nav .nav-links-app li {
+  list-style: none;
+}
+
+#desktop-nav .nav-links-app a {
+  text-decoration: none;
+  color: white;
+  font-size: 1.5rem; /* Increase font size */
+  transition: color 0.3s ease-in-out;
+  user-select: none;
+  filter: invert(100%);
+}
+
+#desktop-nav .nav-links-app a:hover {
+  color: #007bff;
+}
+
+/* Hamburger Menu */
+#hamburger-nav {
+  filter: invert(100%);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1em;
+}
+
+.hamburger-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 24px;
+  width: 30px;
+  cursor: pointer;
+}
+
+.hamburger-icon span {
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  transition: all 0.3s ease-in-out;
+  user-select: none;
+}
+
+.menu-links-app {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: transparent;
+  width: fit-content;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.menu-links-app.open {
+  max-height: 300px;
+}
+
+.menu-links-app a {
+  display: block;
+  padding: 10px;
+  text-align: left;
+  font-size: 1.5rem;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+  user-select: none;
+}
+
+.menu-links-app li {
+  list-style: none;
+}
+
+.hamburger-icon.open span:first-child {
+  transform: rotate(45deg) translate(10px, 5px);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.open span:last-child {
+  transform: rotate(-45deg) translate(10px, -5px);
+}
+
+#cart-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.5rem;
+  z-index: 10;
+  filter: invert(100%);
+}
+
+#socials-container {
+  filter: invert(100%);
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+}
+
+.icon {
+  filter: invert(100%);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+#logo-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  filter: invert(100%);
+}
+
+#shop-container {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 2rem;
+}
+
+#shop-container h1 {
+  color: white;
+  font-size: 4rem;
+  font-family: "Oswald", sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+#shop-container a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  #desktop-nav {
+    display: none;
+  }
+
+  #hamburger-nav {
+    display: flex;
+  }
+}

@@ -1,0 +1,10 @@
+flask
+flask-bcrypt
+flask-sqlalchemy
+python-dotenv
+flask_cors
+flask-session
+redis
+flask_mail
+flask-migrate
+flask_login

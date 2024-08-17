@@ -1,0 +1,403 @@
+
+
+html, body {
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.shop {
+    padding: 50px;
+    background-color: white;
+    min-height: 100vh;
+}
+
+
+.buy-now {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.buy-now h1 {
+    font-size: 5rem;
+    margin-right: 20px;
+    color: #000000;
+    padding-bottom: 1rem;
+}
+
+.search-bar {
+    background-color: #ffffff; 
+    color: #000000;
+    padding: 5px 10px; 
+    font-size: 0.9rem; 
+    border-radius: 5px;
+    border: 1px solid #000000; 
+    position: absolute;
+    right: 0;
+    width: 200px; 
+    margin-left: 20px;
+}
+
+
+.none-found {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+    text-align: center;
+    font-size: 2rem;
+    position: relative;
+}
+
+.none-found h1 {
+    color: black;
+}
+
+
+.none-found img {
+    max-height: 20vh;     
+    display: block; 
+}
+
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+.product-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    width: 200px; /* Set the width of the card */
+    height: 300px; /* Set the height of the card */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fills the card while maintaining aspect ratio */
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .product-card:hover img {
+    transform: scale(1.2); /* Smooth scale-up on hover */
+  }
+  
+  .product-card h2 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    z-index: 1; /* Ensures the text appears above the image */
+  }
+  
+
+#cart-container-shop {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: black;
+    font-size: 0.5rem;
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+#cart-container-shop:hover {
+    transform: scale(1.2);
+}
+
+#cart-container-shop {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: black;
+    font-size: 0.5rem;
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+#cart-container-shop:hover {
+    transform: scale(1.2);
+}
+
+
+#cart-container-shop {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: black;
+    font-size: 0.5rem;
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+#cart-container-shop:hover {
+    transform: scale(1.2);
+}
+
+    
+
+#cart-container-shop {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: black;
+    font-size: 0.5rem;
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+#cart-container-shop:hover {
+    transform: scale(1.2);
+}
+
+.product-card h2 {
+    font-size: 1.2rem;     max-width: 100%;
+}
+
+.product-card p {
+    font-size: 1rem;     max-width: 100%;
+}
+
+  
+  .category-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .category-nav button {
+    padding: 10px 20px;
+    border: 1px solid #ffffff;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .category-nav button:hover {
+    transform: scale(1.05);
+    background-color: #868383;
+  }
+  
+
+nav {
+    background-color: transparent;
+    padding: 1em;
+}
+
+#desktop-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+    padding: 1em;
+    filter: invert(100%);
+}
+
+#desktop-nav .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#desktop-nav .nav-links li {
+    list-style: none;
+}
+
+#desktop-nav .nav-links a {
+    text-decoration: none;
+    color: black;
+    font-size: 1.5rem;
+    transition: color 0.3s ease-in-out;
+    user-select: none;
+    filter: invert(100%);
+}
+
+#desktop-nav .nav-links a:hover {
+    color: #007bff;
+    font-size: xx-large;
+    transform: scale(1.5);
+}
+
+#hamburger-nav-shop {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1em;
+}
+
+.hamburger-menu-shop {
+    position: relative;
+    display: inline-block;
+}
+
+.hamburger-icon-shop {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 24px;
+    width: 30px;
+    cursor: pointer;
+}
+
+.hamburger-icon-shop span {
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    transition: all 0.3s ease-in-out;
+    user-select: none;
+}
+
+.menu-links-shop {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background-color: transparent;
+    width: fit-content;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.menu-links-shop.open {
+    max-height: 300px;
+}
+
+.menu-links-shop a {
+    display: block;
+    padding: 10px;
+    text-align: left;
+    font-size: 1.5rem;
+    color: black;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+    user-select: none;
+}
+
+.menu-links-shop li {
+    list-style: none;
+}
+
+.hamburger-icon.open span:first-child {
+    transform: rotate(45deg) translate(10px, 5px);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-icon.open span:last-child {
+    transform: rotate(-45deg) translate(10px, -5px);
+}
+
+
+#socials-container-shop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+}
+
+
+
+.icon {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+.icon:hover{
+    transform: scale(1.2);
+
+}
+
+#logo-container-shop {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+}
+
+#logo-container-shop a:hover {
+    transform: scale(1.05);}
+
+#shop-container-shop {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: black;
+    font-size: 2rem;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    filter: invert(100%);
+}
+
+
+@media (max-width: 768px) {
+    #desktop-nav {
+        display: none;
+    }
+
+    #hamburger-nav {
+        display: flex;
+    }
+
+    .dropdown {
+        flex-direction: column;
+    }
+
+    .dropdown-content {
+        flex-direction: column;
+    }
+}

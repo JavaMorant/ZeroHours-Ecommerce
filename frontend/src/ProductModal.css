@@ -1,0 +1,360 @@
+/* Importing Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's above other content */
+    opacity: 0;
+    animation: fadeIn 0.5s forwards; /* Smooth fade-in effect */
+    overflow-y: auto; /* Allow scrolling if needed */
+    padding: 20px; /* Add padding for better viewing on smaller screens */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    max-height: 80%; /* Limit the height to avoid overflow */
+    overflow-y: auto; /* Allow content to scroll if it exceeds the max height */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
+    transform: translateY(-20px);
+    opacity: 0;
+    animation: slideUp 0.4s forwards 0.1s; /* Slight delay for coordinated effect */
+    font-family: 'Roboto', sans-serif; /* Updated font-family */
+}
+
+/* Modal Body */
+.modal-body {
+    display: flex;
+    width: 100%;
+    gap: 30px; /* Space between image and details */
+    overflow-y: auto; /* Allow scrolling within the modal body */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        flex-direction: column;
+        width: 90%;
+        max-height: 90%; /* Adjust max height for smaller screens */
+    }
+
+    .modal-body {
+        flex-direction: column;
+    }
+
+    .image-carousel, .modal-details {
+        width: 100%;
+    }
+
+    .add-to-cart-button {
+        font-size: 1.2rem;
+    }
+}
+
+
+/* Modal Body */
+.modal-body {
+    display: flex;
+    width: 100%;
+    gap: 30px; /* Space between image and details */
+}
+
+/* Image Carousel Styles */
+.image-carousel {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    max-height: 400px; /* Set a maximum height for the carousel */
+    overflow: hidden; /* Hide any overflow */
+    display: flex;
+    align-items: center; /* Center image vertically */
+    justify-content: center; /* Center image horizontally */
+}
+
+.modal-image {
+    width: auto; /* Maintain aspect ratio */
+    height: 100%; /* Image height fills the carousel height */
+    max-width: 100%; /* Ensure image doesn't exceed carousel width */
+    object-fit: cover; /* Cover the container while maintaining aspect ratio */
+    border-radius: 8px;
+    display: block;
+}
+
+/* Arrows: only visible on hover */
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.carousel-button.prev {
+    left: 10px;
+}
+
+.carousel-button.next {
+    right: 10px;
+}
+
+.image-carousel:hover .carousel-button {
+    opacity: 1;
+}
+
+/* Dot Indicators */
+.dot-indicators {
+    text-align: center;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.dot.active {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Rest of your styles here */
+
+
+/* Modal Details */
+.modal-details {
+    width: 50%;
+    font-family: 'Roboto', sans-serif;
+    padding-left: 20px; /* Add space between image and text */
+}
+
+/* Product Name */
+.modal-details h2 {
+    font-size: 2.2rem; /* Slightly larger font size */
+    font-weight: 400; /* Thinner weight */
+    color: #333333;
+    margin-bottom: 15px; /* Add more space */
+}
+
+/* Product Price */
+.modal-details .price {
+    font-size: 2rem; /* Slightly larger font size */
+    font-weight: 500;
+    color: black; /* A stylish orange-red color */
+    margin-bottom: 25px; /* Add more space */
+}
+
+/* Minimalist Dropdown Modal Styles */
+.dropdown-modal {
+    width: 100%;
+    margin-bottom: 20px;
+    border-top: 0.5px solid #000;
+    border-bottom: 0.5px solid #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    font-family: Arial, sans-serif;
+    color: #000;
+}
+
+.dropdown-modal:hover {
+    background-color: #f9f9f9;
+}
+
+.dropdown-header-modal {
+    padding: 15px 10px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-header-modal:before {
+    content: '\2630'; /* Hamburger icon */
+    font-size: 24px;
+    margin-right: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.dropdown-content-modal {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
+
+.dropdown-modal.open .dropdown-content-modal {
+    max-height: 500px; /* Adjust based on content */
+}
+
+.dropdown-modal.open .dropdown-header-modal:before {
+    transform: rotate(90deg);
+}
+
+.dropdown-content-modal p {
+    padding: 10px 15px;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Size Selection as Boxes */
+.size-selection {
+    margin-bottom: 25px; /* Add more space */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Space between boxes */
+}
+
+.size-selection .size-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 1.2rem; /* Slightly larger font size */
+    border-radius: 6px;
+    border: 2px solid #CCCCCC;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    color: #000000; /* Black text color */
+    position: relative; /* For positioning the crossed-out text */
+}
+
+.size-selection .size-box.available {
+    border-color: #333333;
+}
+
+.size-selection .size-box.selected {
+    background-color: rgb(0, 0, 0); /* Highlight color for selected box */
+    color: #ffffff;
+    border-color: black;
+}
+
+.size-selection .size-box.unavailable {
+    background-color: #f8f8f8; /* Light gray for unavailable */
+    border-color: #cccccc;
+    color: #999999; /* Light gray text */
+    text-decoration: line-through; /* Strike-through text */
+    cursor: not-allowed;
+}
+
+.size-selection .size-box .crossed-out {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #999999; /* Light gray text color */
+    font-size: 0.9rem; /* Slightly smaller font size */
+}
+
+/* Add to Cart Button */
+.add-to-cart-button {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 14px 28px; /* Increase padding */
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem; /* Slightly larger font size */
+    font-weight: 500; /* Slightly lighter weight */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+}
+
+.add-to-cart-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.add-to-cart-button:hover:not(:disabled) {
+    background-color: #333333; /* Slightly lighter black on hover */
+    transform: scale(1.05); /* Slightly larger on hover */
+}
+
+/* Instagram Share Call-to-Action */
+.instagram-share {
+    margin-top: 25px; /* Add more space */
+    text-align: center;
+    font-size: 1.1rem; /* Slightly larger font size */
+    color: #333333;
+}
+
+.instagram-share strong {
+    color: #FF5733; /* Matching the price color for consistency */
+}
+
+/* Close Button */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 28px; /* Slightly larger font size */
+    cursor: pointer;
+    color: #000000; /* Default color */
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.close-button:hover {
+    color: red; /* Change color on hover */
+    transform: scale(1.2); /* Enlarge on hover */
+}
+
+/* Fade-in animation for overlay */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Slide-up animation for modal */
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        flex-direction: column;
+        width: 90%;
+    }
+
+    .modal-body {
+        flex-direction: column;
+    }
+
+    .image-carousel, .modal-details {
+        width: 100%;
+    }
+
+    .add-to-cart-button {
+        font-size: 1.2rem;
+    }
+}

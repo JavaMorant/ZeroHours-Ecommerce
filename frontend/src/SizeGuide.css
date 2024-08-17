@@ -1,0 +1,52 @@
+/* SizeGuide.css */
+
+.container-size-guide {
+  padding: 50px;
+  background-color: white;
+  min-height: 100vh;
+}
+
+.main-size-guide-section {
+  padding: 20px;
+  background-color: #f9f9f9;
+  max-height: 600px; /* Adjust this value as needed */
+  overflow-y: auto; /* Enables vertical scrolling */
+}
+
+.size-guide-heading {
+  font-size: 5rem; /* Larger font size */
+  color: #000000;
+  padding-bottom: 1rem;
+  margin-top: 20px; /* Adjust top margin for spacing */
+  text-align: center;
+}
+
+.size-guide-images {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.size-guide-image {
+  width: 60%;
+  height: auto;
+  margin: 10px 0;
+}
+
+.size-chart {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.size-chart th,
+.size-chart td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.size-chart th {
+  background-color: #f2f2f2;
+}

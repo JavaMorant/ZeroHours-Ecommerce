@@ -1,0 +1,4 @@
+# E-Commerce_Commission
+E-Commerce Sportswear Website
+
+# WHEN UPDATING ONE SIZE FITS ALL SCOUNT IS WHERE THE STOCK NUMBER IS STORED!!!!

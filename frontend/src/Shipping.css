@@ -1,0 +1,80 @@
+/* Container for the shipping section */
+.shipping-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align to the top */
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    background-color: white;
+  }
+  
+  /* Style for the "Shipping Prices" title */
+  .shipping-title {
+    font-size: 5rem; /* Larger font size */
+    color: #000000;
+    padding-bottom: 1rem;
+    margin-top: 20px; /* Adjust top margin for spacing */
+    text-align: center;
+  }
+  
+  /* Style for the shipping table */
+  .shipping-table {
+    border-collapse: collapse;
+    width: 80%;
+    max-width: 600px;
+    margin: 20px 0;
+  }
+  
+  .shipping-table th,
+  .shipping-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .shipping-table th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+  
+  .shipping-table td {
+    background-color: #fff;
+  }
+  
+  /* Center the navigation, logo, and social media containers */
+  #desktop-nav, 
+  #logo-container-about, 
+  #socials-container-about, 
+  #cart-container-about {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+  }
+  
+  /* General Navigation Styles */
+  .nav-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-links li {
+    list-style-type: none;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: black;
+  }
+  
+  /* Hamburger Menu for Mobile */
+  .hamburger-menu-about {
+    margin: 10px 0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .shipping-table {
+      width: 100%;
+    }
+  }
+  
