@@ -88,3 +88,5 @@ class OrderItem(db.Model):
 
     def __repr__(self):
         return f'<OrderItem {self.id}: {self.product_id}, Size: {self.size}, Quantity: {self.quantity}>'
+    
+    

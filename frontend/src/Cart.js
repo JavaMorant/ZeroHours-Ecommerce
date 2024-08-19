@@ -4,6 +4,9 @@ import './Cart.css';
 import httpClient from './httpClients.ts';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Checkout from './Checkout.js';
 
 
 const Cart = () => {
@@ -48,24 +51,32 @@ const Cart = () => {
     }
   };
 
-  const handleQuantityChange = (productId, newQuantity) => {
+  const handleQuantityChange = (productId, selectedSize, newQuantity) => {
     const updatedBasket = basket.map(item =>
-      item.id === productId 
-        ? { ...item, quantity: newQuantity } 
+      item.id === productId && item.selectedSize === selectedSize
+        ? { ...item, quantity: Math.max(1, newQuantity) } // Ensure quantity is at least 1
         : item
-    ).filter(item => item.quantity > 0);
-
+    );
+  
     updateBasket(updatedBasket);
   };
 
-  const handleRemoveItem = (productId) => {
-    const updatedBasket = basket.filter(item => item.id !== productId);
+  const handleRemoveItem = (productId, selectedSize) => {
+    const updatedBasket = basket.filter(item => 
+      !(item.id === productId && item.selectedSize === selectedSize)
+    );
     updateBasket(updatedBasket);
   };
 
   const handleCheckout = () => {
-    alert('Proceeding to checkout!');
-  };
+    // Verify user is logged in first
+    if (!isLoggedIn) {
+      toast.error('You must be logged in to checkout.');
+      navigate('/login');
+    } else {
+      navigate('/checkout');
+    }
+  }
 
   const calculateTotal = () => {
     return basket.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);

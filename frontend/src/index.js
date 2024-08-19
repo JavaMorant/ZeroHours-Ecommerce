@@ -12,6 +12,9 @@ import Contact from './Contact.js'
 import Cart from './Cart.js'
 import Shipping from './Shipping.js'
 import Size from './SizeGuide.js'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Checkout from './Checkout.js';
 import { AuthProvider } from './AuthContext';  // Import AuthProvider
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -19,16 +22,18 @@ root.render(
   <React.StrictMode>
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/contact" element={<Contact />} /> 
-          <Route path="/cart" element={<Cart />} /> 
-          <Route path="/shipping" element={<Shipping />} /> 
-          <Route path="/sizeguide" element={<Size />} /> 
-        </Routes>
+        <ToastContainer />
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/contact" element={<Contact />} /> 
+            <Route path="/cart" element={<Cart />} /> 
+            <Route path="/shipping" element={<Shipping />} /> 
+            <Route path="/sizeguide" element={<Size />} /> 
+            <Route path="/checkout" element={<Checkout />} />
+          </Routes>
       </AuthProvider>
     </Router>
   </React.StrictMode>

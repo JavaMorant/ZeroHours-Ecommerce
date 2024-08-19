@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session, url_for
+from flask import Flask, jsonify, request, session, url_for, send_from_directory
 from flask_bcrypt import Bcrypt
 from models import Basket, db, User, Products
 from config import ApplicationConfig
@@ -8,10 +8,7 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import os
 from flask_migrate import Migrate
-from flask import jsonify, request
-from flask import send_from_directory, url_for
-
-from flask_login import LoginManager, login_user, login_required, current_user, logout_user, login_manager
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 
 app = Flask(__name__)
@@ -129,6 +126,8 @@ def login_user_route():
         return jsonify({"error": "Incorrect password"}), 401
     
     login_user(user)
+    session['user_id'] = user.id  # Set a session cookie
+
     return jsonify({
         "id": user.id,
         "email": user.email,
@@ -182,12 +181,16 @@ def serve_hover_image(product_name, filename):
 # Check if the user is currently logged in
 @app.route("/check-login")
 def check_login():
-    return jsonify({"isLoggedIn": current_user.is_authenticated})
+    if current_user.is_authenticated:
+        return jsonify({"authenticated": True, "user_id": current_user.id}), 200
+    else:
+        return jsonify({"authenticated": False}), 200
 
-# Retrieve the current user's basket
+# # Retrieve the current user's basket
 @app.route("/api/get-basket")
 @login_required
 def get_basket():
+    app.logger.info(f"User {current_user.id if current_user.is_authenticated else 'Not authenticated'} is getting basket")
     try:
         basket_items = Basket.query.filter_by(user_id=current_user.id).all()
         basket = []
@@ -200,7 +203,7 @@ def get_basket():
                     'price': float(product.price),
                     'quantity': item.quantity,
                     'photo': product.photo,
-                    # Add other necessary product details
+                    #Size?
                 })
         return jsonify({"basket": basket})
     except Exception as e:
@@ -211,6 +214,7 @@ def get_basket():
 @app.route("/api/update-basket", methods=["POST"])
 @login_required
 def update_basket():
+    app.logger.info(f"User {current_user.id if current_user.is_authenticated else 'Not authenticated'} is updating basket")
     try:
         new_basket = request.json.get("basket")
         
@@ -233,22 +237,95 @@ def update_basket():
         db.session.rollback()
         return jsonify({"error": "An error occurred while updating the basket"}), 500
 
-@app.route("/api/add-to-basket", methods=["POST"])
+@app.route('/api/add-to-basket', methods=['POST'])
 @login_required
 def add_to_basket():
-    product_id = request.json.get("product_id")
-    quantity = request.json.get("quantity", 1)
+    data = request.json
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
     
-    existing_item = Basket.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    product = Products.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
     
-    if existing_item:
-        existing_item.quantity += quantity
+    basket_item = Basket.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    
+    if basket_item:
+        basket_item.quantity += quantity
     else:
-        new_item = Basket(user_id=current_user.id, product_id=product_id, quantity=quantity)
-        db.session.add(new_item)
+        basket_item = Basket(user_id=current_user.id, product_id=product_id, quantity=quantity)
+        db.session.add(basket_item)
     
     db.session.commit()
-    return jsonify({"message": "Item added to basket successfully"})
+    return jsonify({'message': 'Item added to basket'}), 200
+
+
+# New route for creating a payment intent
+@app.route('/api/create-payment-intent', methods=['POST'])
+@login_required
+def create_payment_intent():
+    try:
+        data = request.json
+        amount = data['amount']
+
+        intent = stripe.PaymentIntent.create(
+            amount=amount,
+            currency='usd'
+        )
+
+        return jsonify({
+            'clientSecret': intent.client_secret
+        })
+
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
+# New route for handling successful payments
+@app.route('/api/payment-success', methods=['POST'])
+@login_required
+def payment_success():
+    try:
+        data = request.json
+        payment_intent_id = data['paymentIntentId']
+        
+        # Retrieve the payment intent to verify the payment
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        
+        if payment_intent.status == 'succeeded':
+            # Create a new order
+            new_order = Order(
+                user_id=current_user.id,
+                total_amount=payment_intent.amount / 100,  # Convert cents to dollars
+                status='paid'
+            )
+            db.session.add(new_order)
+            
+            # Add order items
+            basket = current_user.basket
+            for item in basket:
+                order_item = OrderItem(
+                    order_id=new_order.id,
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+                db.session.add(order_item)
+            
+            # Clear the user's basket
+            current_user.basket.clear()
+            
+            db.session.commit()
+            
+            return jsonify({'success': True, 'orderId': new_order.id})
+        else:
+            return jsonify({'error': 'Payment not successful'}), 400
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(error=str(e)), 500
+
+# Update the get_basket route to include product details
+
 
 if __name__ == '__main__':
     app.run(debug=True)
