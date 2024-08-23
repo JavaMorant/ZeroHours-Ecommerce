@@ -52,12 +52,13 @@ const LoginPage = () => {
   
     try {
       if (isSignUp) {
-        // Register logic remains the same
+        const response = await httpClients.post("/register", { email, password });
+        setSuccessMessage("Registration successful. Please check your email to verify your account.");
       } else {
         const response = await httpClients.post("/login", { email, password });
         if (response.data.isAuthenticated) {
-          login(response.data.id); // Use the login function from AuthContext
-          navigate("/"); // Redirect to home page after successful login
+          login(response.data.id);
+          navigate("/");
         } else {
           setErrorMessage(response.data.error || "An error occurred during login.");
         }

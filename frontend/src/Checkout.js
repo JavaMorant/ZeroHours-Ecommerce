@@ -88,7 +88,7 @@ const Checkout = () => {
     const fetchCart = async () => {
       if (isLoggedIn) {
         try {
-          const response = await httpClient.get("/api/get-basket");
+          const response = await httpClient.get("/get-basket");
           setCart(response.data.basket);
         } catch (error) {
           console.error("Error fetching cart:", error);

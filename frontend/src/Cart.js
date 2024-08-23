@@ -20,13 +20,14 @@ const Cart = () => {
     const fetchBasket = async () => {
       if (isLoggedIn) {
         try {
-          const response = await httpClient.get("/api/get-basket");
+          const response = await httpClient.get("/get-basket");
           setBasket(response.data.basket);
         } catch (error) {
           console.error("Error fetching basket:", error);
 
         }
       } else {
+        console.log("NOPE")
         const savedBasket = localStorage.getItem('basket');
         if (savedBasket) {
           setBasket(JSON.parse(savedBasket));
@@ -42,7 +43,7 @@ const Cart = () => {
 
     if (isLoggedIn) {
       try {
-        await httpClient.post("/api/update-basket", { basket: updatedBasket });
+        await httpClient.post("/update-basket", { basket: updatedBasket });
       } catch (error) {
         console.error("Error updating server basket:", error);
       }

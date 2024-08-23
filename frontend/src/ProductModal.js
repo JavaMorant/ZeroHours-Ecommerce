@@ -5,6 +5,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
   const [selectedSize, setSelectedSize] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openDropdown, setOpenDropdown] = useState(null);
+  
 
   useEffect(() => {
     const handleEsc = (event) => {
@@ -53,10 +54,13 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
         ...product,
         selectedSize: selectedSize 
       };
-      addToBasket(itemToAdd);
+      addToBasket(itemToAdd, selectedSize);
+
       onClose(); 
     }
   };
+
+  
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>

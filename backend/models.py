@@ -25,6 +25,8 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f'<User {self.email}>'
+    def get_id(self):
+        return str(self.id)
 
 class Products(db.Model):
     __tablename__ = "products"
@@ -53,12 +55,13 @@ class Basket(db.Model):
     user_id = db.Column(db.String(32), ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.String(32), ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
+    size = db.Column(db.String(5), nullable=False)  # 'S', 'M', 'L', 'XL', 'XXL'
     
     user = relationship('User', back_populates='basket_items')
     product = relationship('Products', back_populates='basket_items')
 
     def __repr__(self):
-        return f'<Basket Item: {self.product_id}, Quantity: {self.quantity}>'
+        return f'<Basket Item: {self.product_id}, Size: {self.size}, Quantity: {self.quantity}>'
 
 class Order(db.Model):
     __tablename__ = "orders"
