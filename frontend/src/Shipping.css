@@ -51,26 +51,7 @@
     margin: 10px 0;
   }
   
-  /* General Navigation Styles */
-  .nav-links {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .nav-links li {
-    list-style-type: none;
-  }
-  
-  .nav-links a {
-    text-decoration: none;
-    color: black;
-  }
-  
-  /* Hamburger Menu for Mobile */
-  .hamburger-menu-about {
-    margin: 10px 0;
-  }
-  
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .shipping-table {

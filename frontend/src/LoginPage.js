@@ -56,7 +56,7 @@ const LoginPage = () => {
       } else {
         const response = await httpClients.post("/login", { email, password });
         if (response.data.isAuthenticated) {
-          login(response.data.id); // Use the login function from AuthContext
+          login(response.data.id); // Use the login function from AuthContext 
           navigate("/"); // Redirect to home page after successful login
         } else {
           setErrorMessage(response.data.error || "An error occurred during login.");

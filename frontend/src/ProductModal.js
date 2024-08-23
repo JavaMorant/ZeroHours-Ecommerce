@@ -88,7 +88,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
           
           <div className="modal-details">
             <h2>{product.name}</h2>
-            <p className="price">{product.price}</p>
+            <p className="price">£{product.price}</p>
 
             <div className={`dropdown-modal ${openDropdown === 'description' ? 'open' : ''}`}>
               <div className="dropdown-header-modal" onClick={() => toggleDropdown('description')}>Description</div>

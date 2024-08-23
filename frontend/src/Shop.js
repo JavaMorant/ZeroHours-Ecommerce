@@ -42,7 +42,7 @@ const Shop = () => {
       if (!loading) {
         setShowLoadingScreen(false);
       }
-    }, 500);
+    }, 0);
 
     return () => clearTimeout(timer);
   }, [loading]);
@@ -165,7 +165,7 @@ const Shop = () => {
           </div>
 
           <div className="nav-and-category">
-            <nav id="desktop-nav">
+            <nav id="desktop-nav-shop">
               <div>
                 <ul className="nav-links">
                   {isLoggedIn ? (

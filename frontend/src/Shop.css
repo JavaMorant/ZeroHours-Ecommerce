@@ -219,7 +219,7 @@ nav {
     padding: 1em;
 }
 
-#desktop-nav {
+#desktop-nav-shop {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -231,17 +231,17 @@ nav {
     filter: invert(100%);
 }
 
-#desktop-nav .nav-links {
+#desktop-nav-shop .nav-links {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-#desktop-nav .nav-links li {
+#desktop-nav-shop .nav-links li {
     list-style: none;
 }
 
-#desktop-nav .nav-links a {
+#desktop-nav-shop .nav-links a {
     text-decoration: none;
     color: black;
     font-size: 1.5rem;
@@ -250,7 +250,7 @@ nav {
     filter: invert(100%);
 }
 
-#desktop-nav .nav-links a:hover {
+#desktop-nav-shop .nav-links a:hover {
     color: #007bff;
     font-size: xx-large;
     transform: scale(1.5);
@@ -259,6 +259,7 @@ nav {
 #hamburger-nav-shop {
     position: fixed;
     bottom: 0;
+    color: #000000;
     left: 0;
     display: none;
     flex-direction: column;
@@ -283,7 +284,7 @@ nav {
 .hamburger-icon-shop span {
     width: 100%;
     height: 2px;
-    background-color: black;
+    background-color: white;
     transition: all 0.3s ease-in-out;
     user-select: none;
 }
@@ -311,7 +312,7 @@ nav {
     padding: 10px;
     text-align: left;
     font-size: 1.5rem;
-    color: black;
+    color: white;
     text-decoration: none;
     transition: color 0.3s ease-in-out;
     user-select: none;
@@ -385,19 +386,110 @@ nav {
 
 
 @media (max-width: 768px) {
-    #desktop-nav {
+    /* Hide desktop navigation and display hamburger navigation */
+    #desktop-nav-shop .nav-links {
         display: none;
     }
 
-    #hamburger-nav {
+    #hamburger-nav-shop {
         display: flex;
+        filter: invert(100%);
     }
 
-    .dropdown {
-        flex-direction: column;
+    /* Adjust image padding */
+    #image-head img {
+        padding: 10px;
     }
 
-    .dropdown-content {
-        flex-direction: column;
+    /* Adjust cart container for mobile view */
+    #cart-container-shop {
+        top: 10px;
+        right: 10px;
+        font-size: 0.75rem;
     }
+
+    /* Adjust socials container for mobile view */
+    #socials-container-shop {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    /* Adjust the main shop container */
+    #shop-container-shop {
+        top: 60%;
+        font-size: 1.5rem;
+    }
+
+    /* Adjust heading size in shop container */
+    #shop-container-shop h1 {
+        font-size: 2.5rem;
+    }
+
+    /* Resize the hamburger icon for mobile view */
+    .hamburger-icon-shop {
+        height: 20px;
+        width: 25px;
+    }
+
+    /* Adjust font size and padding in the menu links */
+    .menu-links-shop a {
+        font-size: 1.25rem;
+        padding: 8px;
+    }
+
+    /* Adjust the product cards for smaller screens */
+    .product-card {
+        width: 150px;
+        height: 250px;
+    }
+
+    .product-card h2 {
+        font-size: 1rem;
+        padding: 8px;
+    }
+
+    .product-card p {
+        font-size: 0.9rem;
+    }
+
+
+
+    /* Adjust category navigation buttons */
+    .category-nav button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+
+    /* Adjust icon size in the shop container */
+    .icon {
+        width: 24px;
+        height: 24px;
+    }
+    .buy-now {
+        flex-direction: column; /* Stack title and search bar vertically */
+        align-items: center; /* Center the elements horizontally */
+        padding: 20px; /* Add padding around the container */
+        gap: 10px; /* Add space between the title and the search bar */
+        width: 100%; /* Ensure full width for proper centering */
+        position: relative; /* Ensure elements are positioned correctly */
+        height: 100px;
+    }
+
+    .buy-now h1 {
+       display: none;
+    }
+
+    .search-bar {
+        background-color: #ffffff; 
+        color: #000000;
+        padding: 5px 10px; 
+        font-size: 0.9rem; 
+        border-radius: 5px;
+        border: 1px solid #000000; 
+        width: 100%; /* Make the search bar take full width of its container */
+        max-width: 300px; /* Limit the maximum width to prevent it from becoming too wide */
+        box-sizing: border-box;
+    }
+ 
+    
 }
