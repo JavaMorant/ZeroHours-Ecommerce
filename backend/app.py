@@ -14,6 +14,8 @@ from flask_login import LoginManager, login_user, login_required, current_user, 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig())
 
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000", "allow_headers": ["Content-Type", "Authorization"], "methods": ["GET", "POST", "OPTIONS"]}}, supports_credentials=True)
+
 
 # Email configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Use your email provider's SMTP server
@@ -116,23 +118,16 @@ def login_user_route():
 
     user = User.query.filter_by(email=email).first()
 
-    if user is None:
-        return jsonify({"error": "User does not exist"}), 404
-
-    if not user.email_verified:
-        return jsonify({"error": "Email not verified. Please check your email for the verification link."}), 401
-
-    if not bcrypt.check_password_hash(user.password, password):
-        return jsonify({"error": "Incorrect password"}), 401
-    
-    login_user(user)
-    session['user_id'] = user.id  # Set a session cookie
-
-    return jsonify({
-        "id": user.id,
-        "email": user.email,
-        "isAuthenticated": True
-    }), 200
+    if user and bcrypt.check_password_hash(user.password, password):
+        login_user(user, remember=True)
+        session['user_id'] = str(user.id) 
+        return jsonify({
+            "id": str(user.id),
+            "email": user.email,
+            "isAuthenticated": True
+        }), 200
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
     
 
 
@@ -187,57 +182,81 @@ def check_login():
         return jsonify({"authenticated": False}), 200
 
 # # Retrieve the current user's basket
-@app.route("/api/get-basket")
-@login_required
+@app.route("/get-basket")
 def get_basket():
-    app.logger.info(f"User {current_user.id if current_user.is_authenticated else 'Not authenticated'} is getting basket")
     try:
         basket_items = Basket.query.filter_by(user_id=current_user.id).all()
         basket = []
         for item in basket_items:
-            product = Products.query.get(item.product_id)
-            if product:
-                basket.append({
-                    'id': product.id,
-                    'name': product.name,
-                    'price': float(product.price),
-                    'quantity': item.quantity,
-                    'photo': product.photo,
-                    #Size?
-                })
+            product = item.product
+            basket.append({
+                'id': product.id,
+                'name': product.name,
+                'price': float(product.price),
+                'quantity': item.quantity,
+                'size': item.size,
+                'photo': product.photo,
+            })
         return jsonify({"basket": basket})
     except Exception as e:
-        app.logger.error(f"Error in get_basket: {str(e)}")
         return jsonify({"error": "An error occurred while fetching the basket"}), 500
+
+    # print("Getting basket")
+    # app.logger.info(f"User {current_user.id if current_user.is_authenticated else 'Not authenticated'} is getting basket")
+    # try:
+    #     basket_items = Basket.query.filter_by(user_id=current_user.id).all()
+    #     basket = []
+    #     for item in basket_items:
+    #         product = Products.query.get(item.product_id)
+    #         if product:
+    #             basket.append({
+    #                 # 'id': product.id,
+    #                 'name': product.name,
+    #                 'price': float(product.price),
+    #                 'quantity': item.quantity,
+    #                 'photo': product.photo,
+    #                 #Size?
+    #             })
+    #     return jsonify({"basket": basket})
+    # except Exception as e:
+    #     app.logger.error(f"Error in get_basket: {str(e)}")
+    #     return jsonify({"error": "An error occurred while fetching the basket"}), 500
     
-# Update the current user's basket
-@app.route("/api/update-basket", methods=["POST"])
-@login_required
+# Update the current user's 
+@app.route("/update-basket", methods=["POST", "OPTIONS"])
 def update_basket():
-    app.logger.info(f"User {current_user.id if current_user.is_authenticated else 'Not authenticated'} is updating basket")
+    if request.method == "OPTIONS":
+        return jsonify({"message": "OK"}), 200
+
+    app.logger.info(f"User ID from session: {session.get('user_id')}")
+    app.logger.info(f"Current user authenticated: {current_user.is_authenticated}")
+    
     try:
         new_basket = request.json.get("basket")
         
-        # Clear existing basket
-        Basket.query.filter_by(user_id=current_user.id).delete()
-        
-        # Add new items to basket
-        for item in new_basket:
-            basket_item = Basket(
-                user_id=current_user.id,
-                product_id=item['id'],
-                quantity=item['quantity']
-            )
-            db.session.add(basket_item)
-        
-        db.session.commit()
+        if current_user.is_authenticated:
+            # User is logged in, update database
+            Basket.query.filter_by(user_id=current_user.id).delete()
+            for item in new_basket:
+                basket_item = Basket(
+                    user_id=current_user.id,
+                    product_id=item['id'],
+                    quantity=item['quantity'],
+                    size=item['size']
+                )
+                db.session.add(basket_item)
+            db.session.commit()
+        else:
+            # User is not logged in, store in session
+            session['basket'] = new_basket
+
         return jsonify({"message": "Basket updated successfully"})
     except Exception as e:
         app.logger.error(f"Error in update_basket: {str(e)}")
         db.session.rollback()
         return jsonify({"error": "An error occurred while updating the basket"}), 500
 
-@app.route('/api/add-to-basket', methods=['POST'])
+@app.route('/add-to-basket', methods=['POST'])
 @login_required
 def add_to_basket():
     data = request.json
@@ -261,7 +280,7 @@ def add_to_basket():
 
 
 # New route for creating a payment intent
-@app.route('/api/create-payment-intent', methods=['POST'])
+@app.route('/create-payment-intent', methods=['POST'])
 @login_required
 def create_payment_intent():
     try:
@@ -281,7 +300,7 @@ def create_payment_intent():
         return jsonify(error=str(e)), 403
 
 # New route for handling successful payments
-@app.route('/api/payment-success', methods=['POST'])
+@app.route('/payment-success', methods=['POST'])
 @login_required
 def payment_success():
     try:

@@ -68,7 +68,7 @@ const Shop = () => {
     const initializeBasket = async () => {
       if (isLoggedIn) {
         try {
-          const response = await httpClient.get("/api/get-basket");
+          const response = await httpClient.get("/get-basket");
           setBasket(response.data.basket);
         } catch (error) {
           console.error("Error fetching basket:", error);
@@ -107,17 +107,21 @@ const Shop = () => {
     setBasket(updatedBasket);
 
     if (isLoggedIn) {
+      console.log('hello');
       try {
-        await httpClient.post("/api/update-basket", { basket: updatedBasket });
+        await httpClient.post("/update-basket", { basket: updatedBasket });
+        // TOASTIFY SUCCESS
       } catch (error) {
         console.error("Error updating server basket:", error);
       }
     } else {
       localStorage.setItem('basket', JSON.stringify(updatedBasket));
+      // TOASTIFY SUCCESS
     }
   };
 
   const handleLogout = async () => {
+    // TOASTIFY SUCCESS
     await logout();
     navigate('/');
   };

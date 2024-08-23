@@ -52,7 +52,8 @@ const LoginPage = () => {
   
     try {
       if (isSignUp) {
-        // Register logic remains the same
+        const response = await httpClients.post("/register", { email, password });
+        setSuccessMessage("Registration successful. Please check your email to verify your account.");
       } else {
         const response = await httpClients.post("/login", { email, password });
         if (response.data.isAuthenticated) {
