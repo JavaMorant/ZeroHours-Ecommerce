@@ -129,8 +129,8 @@ const Shop = () => {
   const handleCategorySelect = (category) => setSelectedCategory(category);
 
   const toggleMenu = () => {
-    const menu = document.querySelector(".menu-links-shop");
-    const icon = document.querySelector(".hamburger-icon-shop");
+    const menu = document.querySelector(".menu-links-about");
+    const icon = document.querySelector(".hamburger-icon-about");
     menu.classList.toggle("open");
     icon.classList.toggle("open");
   };
@@ -169,7 +169,7 @@ const Shop = () => {
           </div>
 
           <div className="nav-and-category">
-            <nav id="desktop-nav-shop">
+            <nav id="desktop-nav">
               <div>
                 <ul className="nav-links">
                   {isLoggedIn ? (
@@ -220,14 +220,14 @@ const Shop = () => {
             </>
           )}
 
-          <nav id='hamburger-nav-shop'>
-            <div className="hamburger-menu-shop">
-              <div className="hamburger-icon-shop" onClick={toggleMenu}>
+          <nav id='hamburger-nav-about'>
+            <div className="hamburger-menu-about">
+              <div className="hamburger-icon-about" onClick={toggleMenu}>
                 <span></span>
                 <span></span>
                 <span></span>
               </div>
-              <div className="menu-links-shop">
+              <div className="menu-links-about">
                 {isLoggedIn ? (
                   <>
                     <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
@@ -242,7 +242,7 @@ const Shop = () => {
               </div>
             </div>
           </nav>
-          <div id='cart-container-shop'>
+          <div id='cart-container-about'>
             <img
               src="./assets/img/icons8-cart-64.png"
               alt="Cart"
@@ -250,12 +250,12 @@ const Shop = () => {
               onClick={() => navigate('/cart')}
             />
           </div>
-          <div id="logo-container-shop">
+          <div id="logo-container-about">
             <Link to="/">
               <img src='./assets/img/logo_nobg.png' alt="Our Logo" className="logo" />
             </Link>
           </div>
-          <div id="socials-container-shop">
+          <div id="socials-container-about">
             <img src="./assets/img/icons8-instagram-24.png" alt="Our Instagram" className="icon" onClick={() => window.open('https://www.instagram.com/hourszer0/', '_blank')} />
             <img src="./assets/img/icons8-tiktok-24.png" alt="Our TikTok" className="icon" onClick={() => window.open('https://www.tiktok.com/@hourszero', '_blank')} />
             <img src="./assets/img/icons8-facebook-24.png" alt="Our Facebook" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />

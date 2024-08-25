@@ -53,9 +53,26 @@
   
 
   /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .shipping-table {
-      width: 100%;
-    }
+    @media (max-width: 768px) {
+      .shipping-table {
+        width: 100%;
+      }
+    
+      .shipping-title {
+        font-size: 3rem; /* Smaller font size for mobile */
+      }
+    
+      #desktop-nav {
+        display: none; /* Hide desktop navigation on mobile */
+      }
+    
+      #hamburger-nav-about {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color: #000000;
+      }
+    
   }
   

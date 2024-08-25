@@ -2,22 +2,22 @@ import React, { useState, useEffect } from "react";
 import { contactConfig } from "./content_option";
 import { Link } from 'react-router-dom';
 import "./Contact.css";
+import "./AboutUs.css";
 
 export default function Contact() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Function to handle logout
   const handleLogout = () => {
     localStorage.removeItem('userToken');
     setIsLoggedIn(false);
     window.location.href = '/';
   };
 
-  // Function to toggle menu visibility
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    setMenuOpen(!menuOpen); 
   };
+  
 
   useEffect(() => {
     const userToken = localStorage.getItem('userToken');
@@ -26,11 +26,8 @@ export default function Contact() {
 
   return (
     <div className="container-contact">
-      {/* Main Contact Section */}
       <div className="main-contact-section">
-        <h2 className="contact-heading">
-          CONTACT US
-        </h2>
+        <h2 className="contact-heading">CONTACT US</h2>
         <hr className="t_border my-4 ml-0 text-left" />
         <div className="row sec_sp">
           <div className="col col-lg-5 mb-5">
@@ -40,8 +37,7 @@ export default function Contact() {
               <a href={`mailto:${contactConfig.YOUR_EMAIL}`}>
                 {contactConfig.YOUR_EMAIL}
               </a>
-              <br />
-              <br />
+              <br /><br />
               {contactConfig.hasOwnProperty("YOUR_FONE") && (
                 <p>
                   <strong>Phone:</strong> {contactConfig.YOUR_FONE}
@@ -95,7 +91,6 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* Desktop Navigation */}
       <nav id="desktop-nav">
         <ul className="nav-links">
           {isLoggedIn ? (
@@ -114,35 +109,31 @@ export default function Contact() {
         </ul>
       </nav>
 
-      {/* Hamburger Navigation for Mobile */}
       <nav id="hamburger-nav-about">
         <div className="hamburger-menu-about">
-          <div className="hamburger-icon-about" onClick={toggleMenu}>
+          <div className={`hamburger-icon-about ${menuOpen ? 'open' : ''}`} onClick={toggleMenu}>
             <span></span>
             <span></span>
             <span></span>
           </div>
-          {menuOpen && (
-            <div className="menu-links-about">
-              <ul>
-                {isLoggedIn ? (
-                  <>
-                    <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                    <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                  </>
-                ) : (
-                  <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-                )}
-                <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-                <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-                <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
-              </ul>
-            </div>
-          )}
+          <div className={`menu-links-about ${menuOpen ? 'open' : ''}`}>
+            <ul>
+              {isLoggedIn ? (
+                <>
+                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                </>
+              ) : (
+                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+              )}
+              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            </ul>
+          </div>
         </div>
       </nav>
 
-      {/* Cart Icon */}
       <div id="cart-container-about">
         <img 
           src="./assets/img/icons8-cart-64.png" 
@@ -152,14 +143,12 @@ export default function Contact() {
         />
       </div>
 
-      {/* Logo */}
       <div id="logo-container-about">
         <Link to="/">
           <img src='./assets/img/logo_nobg.png' alt="Our Logo" className="logo" />
         </Link>
       </div>
 
-      {/* Social Media Links */}
       <div id="socials-container-about">
         <img 
           src="./assets/img/icons8-instagram-24.png" 

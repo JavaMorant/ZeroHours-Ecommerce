@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from 'react-router-dom';
 import "./SizeGuide.css";
+import "./AboutUs.css";
 
 export default function SizeGuide() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const menuRef = useRef(null);
+  const iconRef = useRef(null);
 
   // Function to handle logout
   const handleLogout = () => {
@@ -15,7 +19,11 @@ export default function SizeGuide() {
 
   // Function to toggle menu visibility
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    if (menuRef.current && iconRef.current) {
+      menuRef.current.classList.toggle("open");
+      iconRef.current.classList.toggle("open");
+      setMenuOpen(!menuOpen);
+    }
   };
 
   // Check login status on component mount
@@ -36,11 +44,10 @@ export default function SizeGuide() {
           {/* Size Guide Images */}
           <div className="size-guide-images-container col col-lg-12">
             <div className="size-guide-images">
-              <img src="./assets/img/tshirts.jpeg" alt="Shorts Size Guide" className="size-guide-image" />
-              <img src="./assets/img/shorts.jpeg" alt="T-Shirts Size Guide" className="size-guide-image" />
+              <img src="./assets/img/tshirts.jpeg" alt="T-Shirts Size Guide" className="size-guide-image" />
+              <img src="./assets/img/shorts.jpeg" alt="Shorts Size Guide" className="size-guide-image" />
             </div>
           </div>
-         
         </div>
       </div>
 
@@ -66,28 +73,26 @@ export default function SizeGuide() {
       {/* Hamburger Navigation for Mobile */}
       <nav id="hamburger-nav-about">
         <div className="hamburger-menu-about">
-          <div className="hamburger-icon-about" onClick={toggleMenu}>
+          <div className="hamburger-icon-about" onClick={toggleMenu} ref={iconRef}>
             <span></span>
             <span></span>
             <span></span>
           </div>
-          {menuOpen && (
-            <div className="menu-links-about">
-              <ul>
-                {isLoggedIn ? (
-                  <>
-                    <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                    <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                  </>
-                ) : (
-                  <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-                )}
-                <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-                <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-                <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
-              </ul>
-            </div>
-          )}
+          <div className="menu-links-about" ref={menuRef}>
+            <ul>
+              {isLoggedIn ? (
+                <>
+                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                </>
+              ) : (
+                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+              )}
+              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            </ul>
+          </div>
         </div>
       </nav>
 

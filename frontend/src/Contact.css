@@ -41,6 +41,27 @@
   padding-left: 15px;
 }
 
+
+
+    /* Resize the hamburger icon for mobile view */
+  .hamburger-icon-about {
+      height: 20px;
+      width: 25px;
+  }
+
+  /* Ensure the menu expands fully on mobile */
+  .menu-links-about {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    color: white;
+    background-color: transparent;
+    transition: max-height 0.3s ease-in-out;
+}
+
 @media (min-width: 992px) {
   .col-lg-8 {
     flex: 0 0 66.666667%;
@@ -61,6 +82,62 @@
   .col-lg-12 {
     flex: 0 0 100%;
     max-width: 100%;
+  }
+}
+
+/* Adjust heading size for smaller screens */
+@media (max-width: 1200px) {
+  .contact-heading {
+    font-size: 4rem;
+  }
+
+  
+.hamburger-icon-about {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 24px;
+  width: 30px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+  /* Ensure the menu expands fully on mobile */
+  .menu-links-about {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    color: white;
+    background-color: transparent;
+    transition: max-height 0.3s ease-in-out;
+}
+
+    /* Adjust font size and padding in the menu links */
+    .menu-links-about a {
+      font-size: 1.25rem;
+      padding: 8px;
+  }
+
+}
+
+@media (max-width: 992px) {
+  .contact-heading {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-heading {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .contact-heading {
+    font-size: 2rem;
   }
 }
 
@@ -154,4 +231,110 @@
   color: #fff;
   background-color: #0056b3;
   border-color: #0056b3;
+}
+/* Base styles for hamburger menu icon */
+.hamburger-icon-about {
+  height: 20px;
+  width: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Hamburger icon bars */
+.hamburger-icon-about span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: white;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Hamburger icon open state */
+.hamburger-icon-about.open span:nth-child(1) {
+  transform: rotate(45deg) translateY(6px);
+}
+
+.hamburger-icon-about.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon-about.open span:nth-child(3) {
+  transform: rotate(-45deg) translateY(-6px);
+}
+
+/* Base styles for the menu */
+.menu-links-about {
+  position: absolute;
+  top: 60px; /* Adjust to align with the hamburger icon */
+  left: 0;
+  width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  background-color: #000; /* Ensure background color is visible */
+  color: white;
+  transition: max-height 0.3s ease-in-out;
+  z-index: 1000; /* Ensure the menu is on top of other elements */
+}
+
+/* Expand the menu when it's open */
+.menu-links-about.open {
+  max-height: 500px; /* Adjust based on content height */
+  overflow: auto;
+}
+
+/* Style links inside the menu */
+.menu-links-about ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-links-about li {
+  padding: 10px 15px;
+  list-style: none;
+
+}
+
+.menu-links-about a {
+  color: black;
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+/* Adjust link styles on hover */
+.menu-links-about a:hover {
+  color: #007bff;
+}
+
+/* Responsive adjustments for the hamburger icon */
+@media (max-width: 1200px) {
+  .hamburger-icon-about {
+    height: 24px;
+    width: 30px;
+  }
+
+  .menu-links-about {
+    top: 70px; /* Adjust based on icon size */
+  }
+}
+
+@media (max-width: 992px) {
+  .contact-heading {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-heading {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .contact-heading {
+    font-size: 2rem;
+  }
 }

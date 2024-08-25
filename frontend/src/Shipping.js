@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import httpClients from './httpClients.ts'; 
 import './Shipping.css';
+import './AboutUs.css';
 
 const Shipping = () => {
   const [basket, setBasket] = useState([]);
@@ -87,9 +88,11 @@ const Shipping = () => {
   // };
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    const menu = document.querySelector(".menu-links-about");
+    const icon = document.querySelector(".hamburger-icon-about");
+    menu.classList.toggle("open");
+    icon.classList.toggle("open");
   };
-
   const handleLogout = () => {
     alert('Logging out!');
     localStorage.removeItem('userToken');

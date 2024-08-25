@@ -426,13 +426,13 @@ nav {
     }
 
     /* Resize the hamburger icon for mobile view */
-    .hamburger-icon-shop {
+    .hamburger-icon-about {
         height: 20px;
         width: 25px;
     }
 
     /* Adjust font size and padding in the menu links */
-    .menu-links-shop a {
+    .menu-links-about a {
         font-size: 1.25rem;
         padding: 8px;
     }
