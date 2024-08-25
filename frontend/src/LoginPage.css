@@ -45,6 +45,7 @@ body{
     margin: 15px 0 10px;
 }
 
+  
 .container button{
     background-color: rgb(0, 0, 0);
     color: #fff;
@@ -152,7 +153,7 @@ body{
     overflow: hidden;
     transition: all 0.6s ease-in-out;
     border-radius: 20px;
-    z-index: 1000;
+    z-index: 11;
 }
 
 .container.active .toggle-container{

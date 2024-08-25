@@ -184,19 +184,6 @@ body, html {
 }
 
 
-/* Ensure the popup menu has a black background */
-.menu-links-about {
-  position: fixed; /* Use fixed positioning to break out of containers */
- bottom: 20px;  /* Position at the top */
-  left: 0;
-  width: 100%; /* Full width of the screen */
-  max-height: 0;
-  overflow: hidden;
-  color: white;
-  background-color: black; /* Set background to black */
-  transition: max-height 0.3s ease-in-out;
-  z-index: 10000; /* Ensure it appears above all other elements */
-}
 
 .menu-links-about a {
   display: block;

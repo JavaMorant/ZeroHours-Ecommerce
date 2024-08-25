@@ -148,9 +148,8 @@ nav {
   list-style: none;
 }
 
-/* Hamburger icon animation styles */
 .hamburger-icon.open span:first-child {
-  transform: rotate(45deg) translate(5px, 5px);
+  transform: rotate(45deg) translate(10px, 5px);
 }
 
 .hamburger-icon.open span:nth-child(2) {
@@ -158,8 +157,9 @@ nav {
 }
 
 .hamburger-icon.open span:last-child {
-  transform: rotate(-45deg) translate(5px, -5px);
+  transform: rotate(-45deg) translate(10px, -5px);
 }
+
 #cart-container {
   position: fixed;
   top: 20px;

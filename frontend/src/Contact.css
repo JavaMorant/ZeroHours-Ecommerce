@@ -107,6 +107,8 @@
     position: absolute;
     bottom: 40px;
     left: 0;
+      background-color: rgba(0, 0, 0, 0.8); /* Add some background to ensure readability */
+
     width: 100%;
     max-height: 0;
     overflow: hidden;
@@ -247,7 +249,7 @@
 .hamburger-icon-about span {
   display: block;
   height: 3px;
-  width: 100%;
+  width: 20px;
   background-color: white;
   transition: transform 0.3s ease-in-out;
 }
@@ -265,60 +267,23 @@
   transform: rotate(-45deg) translateY(-6px);
 }
 
-/* Base styles for the menu */
-.menu-links-about {
-  position: absolute;
-  top: 60px; /* Adjust to align with the hamburger icon */
-  left: 0;
-  width: 100%;
-  max-height: 0;
-  overflow: hidden;
-  background-color: #000; /* Ensure background color is visible */
-  color: white;
-  transition: max-height 0.3s ease-in-out;
-  z-index: 1000; /* Ensure the menu is on top of other elements */
-}
-
-/* Expand the menu when it's open */
-.menu-links-about.open {
-  max-height: 500px; /* Adjust based on content height */
-  overflow: auto;
-}
-
-/* Style links inside the menu */
-.menu-links-about ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-links-about li {
-  padding: 10px 15px;
-  list-style: none;
-
-}
-
-.menu-links-about a {
-  color: black;
-  text-decoration: none;
-  font-size: 1.25rem;
-}
-
-/* Adjust link styles on hover */
-.menu-links-about a:hover {
-  color: #007bff;
-}
 
 /* Responsive adjustments for the hamburger icon */
 @media (max-width: 1200px) {
   .hamburger-icon-about {
     height: 24px;
-    width: 30px;
+    width: 300px;
+    z-index: 1000;
   }
 
-  .menu-links-about {
-    top: 70px; /* Adjust based on icon size */
+  .hamburger-icon-about.open {
+    z-index: 1001;
   }
+  .menu-links-about.open {
+    z-index: 1001;
+    background-color: #000000;
+  }
+
 }
 
 @media (max-width: 992px) {

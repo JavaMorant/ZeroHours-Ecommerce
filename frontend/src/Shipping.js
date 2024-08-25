@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import httpClients from './httpClients.ts'; 
 import './Shipping.css';
@@ -8,6 +8,10 @@ const Shipping = () => {
   const [basket, setBasket] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Refs for the menu and hamburger icon
+  const menuRef = useRef(null);
+  const iconRef = useRef(null);
 
   // Predefined shipping info for UK, EU, and non-EU regions
   const shippingRates = [
@@ -53,6 +57,7 @@ const Shipping = () => {
 
     initializeBasket();
   }, []);
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       const userToken = localStorage.getItem('userToken');
@@ -73,26 +78,10 @@ const Shipping = () => {
     checkLoginStatus();
   }, []);
 
-  // const updateBasket = async (updatedBasket) => {
-  //   setBasket(updatedBasket);
-
-  //   if (isLoggedIn) {
-  //     try {
-  //       await httpClients.post("//127.0.0.1:5000/api/update-basket", { basket: updatedBasket });
-  //     } catch (error) {
-  //       console.error("Error updating server basket:", error);
-  //     }
-  //   } else {
-  //     localStorage.setItem('basket', JSON.stringify(updatedBasket));
-  //   }
-  // };
-
   const toggleMenu = () => {
-    const menu = document.querySelector(".menu-links-about");
-    const icon = document.querySelector(".hamburger-icon-about");
-    menu.classList.toggle("open");
-    icon.classList.toggle("open");
+    setMenuOpen(!menuOpen);
   };
+
   const handleLogout = () => {
     alert('Logging out!');
     localStorage.removeItem('userToken');
@@ -150,28 +139,33 @@ const Shipping = () => {
       {/* Hamburger Navigation for Mobile */}
       <nav id="hamburger-nav-about">
         <div className="hamburger-menu-about">
-          <div className="hamburger-icon-about" onClick={toggleMenu}>
+          <div 
+            className={`hamburger-icon-about ${menuOpen ? 'open' : ''}`} 
+            onClick={toggleMenu}
+            ref={iconRef}
+          >
             <span></span>
             <span></span>
             <span></span>
           </div>
-          {menuOpen && (
-            <div className="menu-links-about">
-              <ul>
-                {isLoggedIn ? (
-                  <>
-                    <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                    <li><Link to="/" onClick={handleLogout}>Logout</Link></li>
-                  </>
-                ) : (
-                  <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-                )}
-                <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-                <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-                <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
-              </ul>
-            </div>
-          )}
+          <div 
+            className={`menu-links-about ${menuOpen ? 'open' : ''}`} 
+            ref={menuRef}
+          >
+            <ul>
+              {isLoggedIn ? (
+                <>
+                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                  <li><Link to="/" onClick={handleLogout}>Logout</Link></li>
+                </>
+              ) : (
+                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+              )}
+              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            </ul>
+          </div>
         </div>
       </nav>
 

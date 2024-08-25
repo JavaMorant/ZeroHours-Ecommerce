@@ -129,8 +129,8 @@ const Shop = () => {
   const handleCategorySelect = (category) => setSelectedCategory(category);
 
   const toggleMenu = () => {
-    const menu = document.querySelector(".menu-links-about");
-    const icon = document.querySelector(".hamburger-icon-about");
+    const menu = document.querySelector(".menu-links-shop");
+    const icon = document.querySelector(".hamburger-icon-shop");
     menu.classList.toggle("open");
     icon.classList.toggle("open");
   };
