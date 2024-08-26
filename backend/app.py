@@ -185,8 +185,15 @@ def check_login():
 @app.route("/get-basket")
 def get_basket():
     try:
+        print("test 1")
+        if not current_user.is_authenticated:
+            return jsonify({"error": "User not authenticated"}), 401
+        
         basket_items = Basket.query.filter_by(user_id=current_user.id).all()
+        print("test 2")
         basket = []
+        print("test 3")
+
         for item in basket_items:
             product = item.product
             basket.append({
@@ -199,6 +206,7 @@ def get_basket():
             })
         return jsonify({"basket": basket})
     except Exception as e:
+        print(e)   
         return jsonify({"error": "An error occurred while fetching the basket"}), 500
 
     # print("Getting basket")
