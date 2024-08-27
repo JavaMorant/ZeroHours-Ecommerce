@@ -17,15 +17,13 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Refs for hamburger menu and its container
   const menuRef = useRef(null);
   const iconRef = useRef(null);
 
-  // Function to handle logout
   const handleLogout = () => {
     localStorage.removeItem('userToken');
     setIsLoggedIn(false);
-    navigate('/'); // Redirect to home page after logout
+    navigate('/');
   };
 
   // Function to toggle menu visibility
@@ -214,7 +212,6 @@ const LoginPage = () => {
             className="menu-links-about" 
             ref={menuRef} // Attach ref here
           >
-            <ul>
               {isLoggedIn ? (
                 <>
                   <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
@@ -226,9 +223,8 @@ const LoginPage = () => {
               <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
               <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
               <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-              <li><Link to="/about" onClick={toggleMenu}>Shipping</Link></li>
+              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
               <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
-            </ul>
           </div>
         </div>
       </nav>

@@ -153,16 +153,18 @@ const Shipping = () => {
             ref={menuRef}
           >
             <ul>
-              {isLoggedIn ? (
+            {isLoggedIn ? (
                 <>
                   <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={handleLogout}>Logout</Link></li>
+                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
                 </>
               ) : (
                 <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
               )}
               <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
               <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
               <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
             </ul>
           </div>
