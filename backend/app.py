@@ -120,6 +120,7 @@ def login_user_route():
     if user and bcrypt.check_password_hash(user.password, password):
         login_user(user, remember=True)
         session['_user_id'] = str(user.id) 
+        print(session)
         if current_user.is_authenticated:
             return jsonify({
                 "id": str(user.id),

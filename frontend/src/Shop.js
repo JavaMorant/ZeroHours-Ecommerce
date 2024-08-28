@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import './Shop.css';
@@ -21,6 +21,10 @@ const Shop = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [basket, setBasket] = useState([]);
   const [imagesLoaded, setImagesLoaded] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const menuRef = useRef(null);
+  const iconRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,12 +132,8 @@ const Shop = () => {
   const handleCategorySelect = (category) => setSelectedCategory(category);
 
   const toggleMenu = () => {
-    const menu = document.querySelector(".menu-links-shop");
-    const icon = document.querySelector(".hamburger-icon-shop");
-    menu.classList.toggle("open");
-    icon.classList.toggle("open");
+    setMenuOpen(!menuOpen);
   };
-
   const handleProductClick = useCallback((product) => {
     setSelectedProduct(product);
     setModalOpen(true);
@@ -220,8 +220,10 @@ const Shop = () => {
           )}
 
           <nav id='hamburger-nav-about'>
-            <div className="hamburger-menu-about">
-              <div className="hamburger-icon-about" onClick={toggleMenu}>
+            <div className="hamburger-menu-about"             ref={menuRef}
+            >
+              <div className="hamburger-icon-about" onClick={toggleMenu}             ref={iconRef}
+              >
                 <span></span>
                 <span></span>
                 <span></span>
