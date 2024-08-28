@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import httpClients from './httpClients.ts'; 
 import './Shipping.css';
 import './AboutUs.css';
 
 const Shipping = () => {
-  const [basket, setBasket] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [, setBasket] = useState([]);
+  const [isLoggedIn, logout] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Refs for the menu and hamburger icon
   const menuRef = useRef(null);
@@ -38,7 +39,6 @@ const Shipping = () => {
   useEffect(() => {
     const initializeBasket = async () => {
       const userToken = localStorage.getItem('userToken');
-      setIsLoggedIn(!!userToken);
 
       if (userToken) {
         try {
@@ -58,35 +58,14 @@ const Shipping = () => {
     initializeBasket();
   }, []);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const userToken = localStorage.getItem('userToken');
-      if (userToken) {
-        try {
-          const response = await httpClients.get("/check-login");
-          setIsLoggedIn(response.data.isLoggedIn);
-          if (!response.data.isLoggedIn) {
-            localStorage.removeItem('userToken');
-          }
-        } catch (error) {
-          console.error("Error checking login status:", error);
-          localStorage.removeItem('userToken');
-        }
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
-  const handleLogout = () => {
-    alert('Logging out!');
-    localStorage.removeItem('userToken');
-    setIsLoggedIn(false);
-    window.location.href = '/'; // Redirect to home after logout
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
   };
 
   return (

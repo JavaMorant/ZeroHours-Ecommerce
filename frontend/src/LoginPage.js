@@ -12,7 +12,7 @@ const LoginPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, logout] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -20,9 +20,8 @@ const LoginPage = () => {
   const menuRef = useRef(null);
   const iconRef = useRef(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -42,10 +41,7 @@ const LoginPage = () => {
     }
   }, [menuOpen]);
 
-  useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    setIsLoggedIn(!!userToken);
-  }, []);
+
 
   useEffect(() => {
     const link = document.createElement('link');
@@ -66,7 +62,10 @@ const LoginPage = () => {
     try {
       if (isSignUp) {
         const response = await httpClients.post("/register", { email, password });
-        setSuccessMessage("Registration successful. Please check your email to verify your account.");
+        if (response.ok) {
+          setSuccessMessage("Registration successful. Please check your email to verify your account.");
+
+        }
       } else {
         const response = await httpClients.post("/login", { email, password });
         if (response.data.isAuthenticated) {
@@ -98,10 +97,10 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             <h1>Create Account</h1>
             <div className="social-icons">
-              <a href="#" className="icons"><i className='bx bxl-google'></i></a>
-              <a href="#" className="icons"><i className='bx bxl-facebook'></i></a>
-              <a href="#" className="icons"><i className='bx bxl-github'></i></a>
-              <a href="#" className="icons"><i className='bx bxl-linkedin'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-google'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-facebook'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-github'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-linkedin'></i></a>
             </div>
             <span>Register with E-mail</span>
             <input 
@@ -135,10 +134,10 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             <h1>Sign In</h1>
             <div className="social-icons">
-              <a href="#" className="icons"><i className='bx bxl-google'></i></a>
-              <a href="#" className="icons"><i className='bx bxl-facebook'></i></a>
-              <a href="#" className="icons"><i className='bx bxl-github'></i></a>
-              <a href="#" className="icons"><i className='bx bxl-linkedin'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-google'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-facebook'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-github'></i></a>
+              <a href="https://www.facebook.com/" className="icons"><i className='bx bxl-linkedin'></i></a>
             </div>
             <span>Login With Email & Password</span>
             <input 
@@ -155,7 +154,9 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)} 
               required
             />
-            <a href="#">Forget Password?</a>
+
+            
+            <a href="https://www.facebook.com/">Forget Password?</a>
             <button type="submit">Sign In</button>
             {errorMessage && <p className="error-message">{errorMessage}</p>}
           </form>

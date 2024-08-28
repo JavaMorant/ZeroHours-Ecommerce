@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Cart.css';
+import './AboutUs.css'
 import httpClient from './httpClients.ts';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Checkout from './Checkout.js';
 
 
 const Cart = () => {
@@ -87,10 +87,9 @@ const Cart = () => {
     setMenuOpen(!menuOpen);
   };
 
-  const handleLogout = () => {
-    alert('Logging out!');
-    localStorage.removeItem('userToken');
-    logout();
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
   };
 
   return (
@@ -123,12 +122,21 @@ const Cart = () => {
           </div>
           {menuOpen && (
             <div className="menu-links-about">
-              <ul>
+            <ul>
+            {isLoggedIn ? (
+                <>
+                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                </>
+              ) : (
                 <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-                <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-                <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-                <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
-              </ul>
+              )}
+              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            </ul>
             </div>
           )}
         </div>

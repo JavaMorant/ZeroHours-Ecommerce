@@ -12,6 +12,6 @@ class ApplicationConfig:
     SQLALCHEMY_DATABASE_URI = r"sqlite:///./db.sqlite"
 
     SESSION_TYPE = "redis"
-    SESSION_PERMANENT =False
-    SESSION_USE_SINGER = True
+    SESSION_PERMANENT =True
+    SESSION_USE_SIGNER = True
     SESSION_REDIS = redis.from_url("redis://127.0.0.1:6379")

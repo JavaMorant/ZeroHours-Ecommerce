@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import LoadingScreen from './LoadingScreen';
-import httpClients from './httpClients.ts';
 import './App.css';
 
 function App() {
   const { isLoggedIn, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [showCartDropdown, setShowCartDropdown] = useState(false);
+  const [, setShowCartDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 

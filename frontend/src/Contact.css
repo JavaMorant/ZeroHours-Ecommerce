@@ -237,7 +237,7 @@
 /* Base styles for hamburger menu icon */
 .hamburger-icon-about {
   height: 20px;
-  width: 25px;
+  width: 35px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -249,14 +249,14 @@
 .hamburger-icon-about span {
   display: block;
   height: 3px;
-  width: 20px;
+  width: 30px;
   background-color: white;
   transition: transform 0.3s ease-in-out;
 }
 
 /* Hamburger icon open state */
 .hamburger-icon-about.open span:nth-child(1) {
-  transform: rotate(45deg) translateY(6px);
+  transform: rotate(45deg) translateY(14px);
 }
 
 .hamburger-icon-about.open span:nth-child(2) {
@@ -264,7 +264,7 @@
 }
 
 .hamburger-icon-about.open span:nth-child(3) {
-  transform: rotate(-45deg) translateY(-6px);
+  transform: rotate(-45deg) translateY(-14px);
 }
 
 

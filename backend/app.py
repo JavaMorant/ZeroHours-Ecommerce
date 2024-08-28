@@ -47,9 +47,9 @@ with app.app_context():
 migrate = Migrate(app, db) 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(_user_id):
     # This function is used by Flask-Login to reload the user object from the user ID stored in the session
-    return User.query.get(user_id) 
+    return User.query.get(_user_id) 
 
 def send_verification_email(email):
     # Generate a secure token for email verification
@@ -104,10 +104,9 @@ def verify_email(token):
         return jsonify({"error": "User not found"}), 404
 
 @app.route("/logout", methods=["POST"])
-@login_required
 def logout():
-    # Log out the current user
     logout_user()
+    print("here")
     return jsonify({"message": "Successfully logged out"}), 200
     
 # Log in the current user
@@ -120,16 +119,17 @@ def login_user_route():
 
     if user and bcrypt.check_password_hash(user.password, password):
         login_user(user, remember=True)
-        session['user_id'] = str(user.id) 
-        return jsonify({
-            "id": str(user.id),
-            "email": user.email,
-            "isAuthenticated": True
-        }), 200
+        session['_user_id'] = str(user.id) 
+        if current_user.is_authenticated:
+            return jsonify({
+                "id": str(user.id),
+                "email": user.email,
+                "isAuthenticated": True
+            }), 200
+        else:
+            return jsonify({"error": "Invalid credentials"}), 401
     else:
         return jsonify({"error": "Invalid credentials"}), 401
-    
-
 
 # Helper function to get all image URLs from the assets/NAME/ folder
 def get_hover_images(product_name):
@@ -149,6 +149,7 @@ def size_option(product):
             'XL': product.xlcount,
             'XXL': product.xxlcount,
         }
+    
 @app.route('/products', methods=['GET'])
 def get_products():
     print("Received request to /products") 
@@ -172,19 +173,19 @@ def serve_hover_image(product_name, filename):
     folder_path = os.path.join('Assets/img', product_name)
     return send_from_directory(folder_path, filename)
 
-
 # Check if the user is currently logged in
 @app.route("/check-login")
 def check_login():
     if current_user.is_authenticated:
-        return jsonify({"authenticated": True, "user_id": current_user.id}), 200
+        return jsonify({"is_authenticated": True, "user_id": current_user.id}), 200
     else:
-        return jsonify({"authenticated": False}), 200
+        return jsonify({"is_authenticated": False}), 200
 
-# # Retrieve the current user's basket
-@app.route("/get-basket")
+#Retrieve the current user's basket
+@app.route("/get-basket", methods=['POST'])
 def get_basket():
     try:
+        print(session)
         print("test 1")
         if not current_user.is_authenticated:
             return jsonify({"error": "User not authenticated"}), 401
@@ -193,6 +194,7 @@ def get_basket():
         print("test 2")
         basket = []
         print("test 3")
+        print()
 
         for item in basket_items:
             product = item.product
@@ -212,7 +214,7 @@ def get_basket():
     # print("Getting basket")
     # app.logger.info(f"User {current_user.id if current_user.is_authenticated else 'Not authenticated'} is getting basket")
     # try:
-    #     basket_items = Basket.query.filter_by(user_id=current_user.id).all()
+    #     basket_items = Basket.query.filter_by(_user_id=current_user.id).all()
     #     basket = []
     #     for item in basket_items:
     #         product = Products.query.get(item.product_id)
@@ -236,9 +238,9 @@ def update_basket():
     if request.method == "OPTIONS":
         return jsonify({"message": "OK"}), 200
 
-    app.logger.info(f"User ID from session: {session.get('user_id')}")
+    app.logger.info(f"User ID from session: {session.get('_user_id')}")
     app.logger.info(f"Current user authenticated: {current_user.is_authenticated}")
-    
+    print(session)
     try:
         new_basket = request.json.get("basket")
         

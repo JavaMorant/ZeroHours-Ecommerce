@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './AboutUs.css';
 
 const toggleMenu = () => {
@@ -11,23 +11,21 @@ const toggleMenu = () => {
 
 const AboutUs = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showCartDropdown, setShowCartDropdown] = useState(false);
+  const [isLoggedIn, logout] = useState(false);
+  const [, setShowCartDropdown] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    setIsLoggedIn(false);
-    window.location.href = '/';
+
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
   };
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index);
   };
 
-  useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    setIsLoggedIn(!!userToken);
-  }, []);
 
   return (
     <div className="about-us-container">

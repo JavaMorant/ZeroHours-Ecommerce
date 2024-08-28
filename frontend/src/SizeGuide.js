@@ -1,20 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link } from 'react-router-dom';
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+
 import "./SizeGuide.css";
 import "./AboutUs.css";
 
 export default function SizeGuide() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [isLoggedIn, logout] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const menuRef = useRef(null);
   const iconRef = useRef(null);
 
   // Function to handle logout
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    setIsLoggedIn(false);
-    window.location.href = '/';
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
   };
 
   // Function to toggle menu visibility
@@ -26,11 +28,6 @@ export default function SizeGuide() {
     }
   };
 
-  // Check login status on component mount
-  useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    setIsLoggedIn(!!userToken);
-  }, []);
 
   return (
     <div className="container-size-guide">

@@ -121,7 +121,6 @@ const Shop = () => {
   };
 
   const handleLogout = async () => {
-    // TOASTIFY SUCCESS
     await logout();
     navigate('/');
   };
