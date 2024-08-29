@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import httpClients from "./httpClients.ts";
+import { isLoggedIn as checkLoggedIn} from "./Auth";
 import "./LoginPage.css";
 import "./AboutUs.css";
-import { useAuth } from './AuthContext';
+import { toast } from "react-toastify"
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -12,18 +13,62 @@ const LoginPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isLoggedIn, logout] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
   const menuRef = useRef(null);
   const iconRef = useRef(null);
+  const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const loggedIn = await isLoggedIn();
+      setIsLoggedIn(loggedIn);
+      if (loggedIn) {
+        toast.info("You are already logged in");
+        navigate("/");
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigate, isLoggedIn]);  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    try {
+        const loggedIn = await checkLoggedIn();
+        if (loggedIn) {
+          toast.info("You are already logged in");
+          navigate("/");
+          return;
+        }
+
+      if (isSignUp) {
+        const response = await httpClients.post("/register", { email, password, name });
+        if (response.ok) {
+          setSuccessMessage("Registration successful. Please check your email to verify your account.");
+        }
+      } else {
+        const response = await httpClients.post("/login", { email, password });
+        if (response.data.isAuthenticated) {
+          setIsLoggedIn(true);
+          toast.success("Successfully logged in");
+          navigate("/");
+        } else {
+          setErrorMessage(response.data.error || "An error occurred during login.");
+        }
+      }
+    } catch (error) {
+      if (error.response) {
+        setErrorMessage(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        setErrorMessage("Network error. Please check your connection and try again.");
+      }
+    }
   };
+
 
   // Function to toggle menu visibility
   const toggleMenu = () => {
@@ -41,8 +86,6 @@ const LoginPage = () => {
     }
   }, [menuOpen]);
 
-
-
   useEffect(() => {
     const link = document.createElement('link');
     link.href = 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css';
@@ -53,36 +96,6 @@ const LoginPage = () => {
       document.head.removeChild(link);
     };
   }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage("");
-    setSuccessMessage("");
-
-    try {
-      if (isSignUp) {
-        const response = await httpClients.post("/register", { email, password });
-        if (response.ok) {
-          setSuccessMessage("Registration successful. Please check your email to verify your account.");
-
-        }
-      } else {
-        const response = await httpClients.post("/login", { email, password });
-        if (response.data.isAuthenticated) {
-          login(response.data.id); // Use the login function from AuthContext 
-          navigate("/"); // Redirect to home page after successful login
-        } else {
-          setErrorMessage(response.data.error || "An error occurred during login.");
-        }
-      }
-    } catch (error) {
-      if (error.response) {
-        setErrorMessage(error.response.data.error || "An error occurred. Please try again.");
-      } else {
-        setErrorMessage("Network error. Please check your connection and try again.");
-      }
-    }
-  };
 
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
@@ -154,8 +167,6 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)} 
               required
             />
-
-            
             <a href="https://www.facebook.com/">Forget Password?</a>
             <button type="submit">Sign In</button>
             {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -181,14 +192,6 @@ const LoginPage = () => {
       {/* Desktop Navigation */}
       <nav id="desktop-nav">
         <ul className="nav-links">
-          {isLoggedIn ? (
-            <>
-              <li><Link to="/account">ACCOUNT</Link></li>
-              <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
-            </>
-          ) : (
-            <li><Link to="/login">LOGIN</Link></li>
-          )}
           <li><Link to="/shop">SHOP</Link></li>
           <li><Link to="/about">OUR MESSAGE</Link></li>
           <li><Link to="/sizeguide">SIZE GUIDE</Link></li>
@@ -213,19 +216,12 @@ const LoginPage = () => {
             className="menu-links-about" 
             ref={menuRef} // Attach ref here
           >
-              {isLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
-              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+           
+            <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+            <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+            <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+            <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+            <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
           </div>
         </div>
       </nav>

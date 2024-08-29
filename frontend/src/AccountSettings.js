@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
 import { ThemeContext } from './ThemeContext';
 import httpClient from './httpClients.ts';
 import './AccountSettings.css';
@@ -17,7 +16,6 @@ const AccountSettings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [message, setMessage] = useState('');
 
-  const { isLoggedIn, logout } = useAuth();
   const { darkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
 

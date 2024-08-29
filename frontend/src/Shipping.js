@@ -42,7 +42,7 @@ const Shipping = () => {
 
       if (userToken) {
         try {
-          const response = await httpClients.get("//127.0.0.1:5000/api/get-basket");
+          const response = await httpClients.get("//127.0.0.1:5000/get-basket");
           setBasket(response.data.basket);
         } catch (error) {
           console.error("Error fetching basket:", error);

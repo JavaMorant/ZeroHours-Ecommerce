@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
 import './Shop.css';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import httpClient from './httpClients.ts';
 import LoadingScreen from './LoadingScreen';
+import { isLoggedIn as checkLoggedIn } from './Auth'; // Import the authentication function
 
 const Shop = () => {
-  const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -22,6 +21,7 @@ const Shop = () => {
   const [basket, setBasket] = useState([]);
   const [imagesLoaded, setImagesLoaded] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Manage the login state
 
   const menuRef = useRef(null);
   const iconRef = useRef(null);
@@ -61,12 +61,13 @@ const Shop = () => {
   }, [searchQuery, selectedCategory, products]);
 
   useEffect(() => {
-    if (window.fd && !isLoggedIn) {
-      window.fd('form', {
-        formId: '64deced1c35bea8b6cf58fdc'
-      });
-    }
-  }, [isLoggedIn]);
+    const checkLoginStatus = async () => {
+      const loggedIn = await checkLoggedIn();
+      setIsLoggedIn(loggedIn);
+    };
+
+    checkLoginStatus();
+  }, []);
 
   useEffect(() => {
     const initializeBasket = async () => {
@@ -111,29 +112,34 @@ const Shop = () => {
     setBasket(updatedBasket);
 
     if (isLoggedIn) {
-      console.log('hello');
       try {
         await httpClient.post("/update-basket", { basket: updatedBasket });
-        // TOASTIFY SUCCESS
+        // Optionally add a success message
       } catch (error) {
         console.error("Error updating server basket:", error);
       }
     } else {
       localStorage.setItem('basket', JSON.stringify(updatedBasket));
-      // TOASTIFY SUCCESS
+      // Optionally add a success message
     }
   };
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/');
+    try {
+      await httpClient.post('/logout'); // Ensure this endpoint logs the user out
+      setIsLoggedIn(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   const handleCategorySelect = (category) => setSelectedCategory(category);
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    setMenuOpen(prevState => !prevState);
   };
+
   const handleProductClick = useCallback((product) => {
     setSelectedProduct(product);
     setModalOpen(true);
@@ -220,31 +226,30 @@ const Shop = () => {
           )}
 
           <nav id='hamburger-nav-about'>
-            <div className="hamburger-menu-about"             ref={menuRef}
-            >
-              <div className="hamburger-icon-about" onClick={toggleMenu}             ref={iconRef}
-              >
+            <div className="hamburger-menu-about" ref={menuRef}>
+              <div className="hamburger-icon-about" onClick={toggleMenu} ref={iconRef}>
                 <span></span>
                 <span></span>
                 <span></span>
               </div>
-              <div className="menu-links-about">
-              {isLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
-              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+              <div className={`menu-links-about ${menuOpen ? 'open' : ''}`}>
+                {isLoggedIn ? (
+                  <>
+                    <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                    <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                  </>
+                ) : (
+                  <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+                )}
+                <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+                <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+                <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+                <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+                <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
               </div>
             </div>
           </nav>
+
           <div id='cart-container-about'>
             <img
               src="./assets/img/icons8-cart-64.png"
@@ -253,17 +258,20 @@ const Shop = () => {
               onClick={() => navigate('/cart')}
             />
           </div>
+
           <div id="logo-container-about">
             <Link to="/">
               <img src='./assets/img/logo_nobg.png' alt="Our Logo" className="logo" />
             </Link>
           </div>
+
           <div id="socials-container-about">
             <img src="./assets/img/icons8-instagram-24.png" alt="Our Instagram" className="icon" onClick={() => window.open('https://www.instagram.com/hourszer0/', '_blank')} />
             <img src="./assets/img/icons8-tiktok-24.png" alt="Our TikTok" className="icon" onClick={() => window.open('https://www.tiktok.com/@hourszero', '_blank')} />
             <img src="./assets/img/icons8-facebook-24.png" alt="Our Facebook" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
             <img src="./assets/img/icons8-X-50.png" alt="Our X" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
           </div>
+
           {modalOpen &&
             <ProductModal
               product={selectedProduct}

@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './AboutUs.css';
+import httpClient from './httpClients.ts';
+import { isLoggedIn } from './Auth';
 
+// Utility function to toggle the hamburger menu
 const toggleMenu = () => {
   const menu = document.querySelector(".menu-links-about");
   const icon = document.querySelector(".hamburger-icon-about");
@@ -11,21 +14,30 @@ const toggleMenu = () => {
 
 const AboutUs = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [isLoggedIn, logout] = useState(false);
-  const [, setShowCartDropdown] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const loggedIn = await isLoggedIn();
+      setIsUserLoggedIn(loggedIn);
+    };
+    checkLoginStatus();
+  }, []);
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/');
+    try {
+      await httpClient.post('/logout'); // Ensure this endpoint logs the user out
+      setIsUserLoggedIn(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index);
   };
-
 
   return (
     <div className="about-us-container">
@@ -37,9 +49,7 @@ const AboutUs = () => {
           </p>
         </div>
         <div className="dropdown" onClick={() => toggleDropdown(1)}>
-          <div className="dropdown-header">
-            Our Mission
-          </div>
+          <div className="dropdown-header">Our Mission</div>
           <div className={`dropdown-content ${openDropdown === 1 ? 'open' : ''}`}>
             <div className="dropdown-text">
               <p>
@@ -52,9 +62,7 @@ const AboutUs = () => {
           </div>
         </div>
         <div className="dropdown" onClick={() => toggleDropdown(2)}>
-          <div className="dropdown-header">
-            Our Vision
-          </div>
+          <div className="dropdown-header">Our Vision</div>
           <div className={`dropdown-content ${openDropdown === 2 ? 'open' : ''}`}>
             <div className="dropdown-text">
               <p>
@@ -67,9 +75,7 @@ const AboutUs = () => {
           </div>
         </div>
         <div className="dropdown" onClick={() => toggleDropdown(3)}>
-          <div className="dropdown-header">
-            Our Values
-          </div>
+          <div className="dropdown-header">Our Values</div>
           <div className={`dropdown-content ${openDropdown === 3 ? 'open' : ''}`}>
             <div className="dropdown-text">
               <p>
@@ -85,7 +91,7 @@ const AboutUs = () => {
       <nav id="desktop-nav">
         <div>
           <ul className="nav-links">
-            {isLoggedIn ? (
+            {isUserLoggedIn ? (
               <>
                 <li><Link to="/account">ACCOUNT</Link></li>
                 <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
@@ -109,24 +115,24 @@ const AboutUs = () => {
             <span></span>
           </div>
           <div className="menu-links-about">
-          {isLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
-              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            {isUserLoggedIn ? (
+              <>
+                <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+              </>
+            ) : (
+              <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+            )}
+            <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+            <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+            <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+            <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+            <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
           </div>
         </div>
       </nav>
       <div id='cart-container-about'>
-        <img src="./assets/img/icons8-cart-64.png" alt="Cart" className="icon" onClick={() => window.location.href='/cart'} onMouseEnter={() => setShowCartDropdown(true)} onMouseLeave={() => setShowCartDropdown(false)} />
+        <img src="./assets/img/icons8-cart-64.png" alt="Cart" className="icon" onClick={() => window.location.href='/cart'} />
       </div>
       <div id="logo-container-about">
         <Link to="/">

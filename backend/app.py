@@ -8,6 +8,7 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import os
 from flask_migrate import Migrate
+import stripe
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 
@@ -15,6 +16,8 @@ app = Flask(__name__)
 app.config.from_object(ApplicationConfig())
 
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000", "allow_headers": ["Content-Type", "Authorization"], "methods": ["GET", "POST", "OPTIONS"]}}, supports_credentials=True)
+stripe.api_key = 'sk_test_51PpWYO2Lpl1R0iboAGzFAsq0DOYkjPpk6tH85n84fLrYpCDYrA3gcWVTsyWjWj0uGGT71l4ShgH6LOk4RB2SJQ3j002hYGjCIl'
+
 
 
 # Email configuration
@@ -32,7 +35,6 @@ s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 # Initialize Flask-Bcrypt
 bcrypt = Bcrypt(app)
 server_session = Session(app)
-CORS(app, supports_credentials=True)
 
 # Initialize Flask-Login
 login_manager = LoginManager()

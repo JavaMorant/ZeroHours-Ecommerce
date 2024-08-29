@@ -15,14 +15,11 @@ import Size from './SizeGuide.js'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Checkout from './Checkout.js';
-import { AuthProvider } from './AuthContext';  // Import AuthProvider
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
-      <AuthProvider>
-        <ToastContainer />
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/about" element={<AboutUs />} />
@@ -33,8 +30,8 @@ root.render(
             <Route path="/shipping" element={<Shipping />} /> 
             <Route path="/sizeguide" element={<Size />} /> 
             <Route path="/checkout" element={<Checkout />} />
-          </Routes>
-      </AuthProvider>
+          </Routes>        
+        <ToastContainer />
     </Router>
   </React.StrictMode>
 );

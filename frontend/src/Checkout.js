@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import httpClient from './httpClients.ts';
+import { isLoggedIn } from './Auth';
 import './Checkout.css';
 
-const stripePromise = loadStripe('your_stripe_publishable_key');
+const stripePromise = loadStripe('pk_test_51PpWYO2Lpl1R0iboJQ53cfJkTYtZD5ed7IpAdHvVghxBQcvh2UjwtQE0AksqPTKKjLPMJ0GryqTZH3CVjSKAorKh00AMEf0Py3');
 
 const CheckoutForm = ({ amount }) => {
   const [succeeded, setSucceeded] = useState(false);
@@ -82,11 +82,20 @@ const CheckoutForm = ({ amount }) => {
 const Checkout = () => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
-  const { isLoggedIn } = useAuth();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const checkLoginStatus = async () => {
+      const loggedIn = await isLoggedIn();
+      setIsUserLoggedIn(loggedIn);
+      if (!loggedIn) {
+        navigate('/login');
+      }
+    };
+    
     const fetchCart = async () => {
-      if (isLoggedIn) {
+      if (isUserLoggedIn) {
         try {
           const response = await httpClient.get("/get-basket");
           setCart(response.data.basket);
@@ -101,13 +110,17 @@ const Checkout = () => {
       }
     };
 
-    fetchCart();
-  }, [isLoggedIn]);
+    checkLoginStatus().then(() => fetchCart());
+  }, [isUserLoggedIn, navigate]);
 
   useEffect(() => {
     const newTotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
     setTotal(newTotal);
   }, [cart]);
+
+  if (!isUserLoggedIn) {
+    return null; // or a loading spinner
+  }
 
   return (
     <div className="checkout-page">

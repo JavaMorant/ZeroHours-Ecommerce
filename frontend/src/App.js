@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
 import LoadingScreen from './LoadingScreen';
 import './App.css';
+import { isLoggedIn as checkLoggedIn } from './Auth';
+import httpClient from './httpClients.ts';
 
 function App() {
-  const { isLoggedIn, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [, setShowCartDropdown] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showCartDropdown, setShowCartDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +25,13 @@ function App() {
     } else {
       setIsLoading(false);
     }
+
+    const checkLoginStatus = async () => {
+      const loggedIn = await checkLoggedIn();
+      setIsLoggedIn(loggedIn);
+    };
+
+    checkLoginStatus();
   }, []);
 
   const toggleMenu = () => {
@@ -31,7 +39,8 @@ function App() {
   };
 
   const handleLogout = async () => {
-    await logout();
+    await httpClient.post('/logout'); // Ensure this endpoint logs the user out
+    setIsLoggedIn(false);
     navigate('/');
   };
 
@@ -103,6 +112,11 @@ function App() {
           onMouseEnter={() => setShowCartDropdown(true)} 
           onMouseLeave={() => setShowCartDropdown(false)}
         />
+        {showCartDropdown && (
+          <div className="cart-dropdown">
+            {/* Add cart items or a mini-cart preview here */}
+          </div>
+        )}
       </div>
       <div id="logo-container">
         <img src='./assets/img/logo_nobg.png' alt="Logo" className="logo"/>

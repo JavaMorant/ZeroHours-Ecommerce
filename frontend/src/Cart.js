@@ -1,64 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Cart.css';
-import './AboutUs.css'
+import './AboutUs.css';
 import httpClient from './httpClients.ts';
-import { useAuth } from './AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { isLoggedIn as checkLoggedIn } from './Auth';
 
 
 const Cart = () => {
   const [basket, setBasket] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
   const navigate = useNavigate();
-  // const [error, setError] = useState
-
-  useEffect(() => {
-    const fetchBasket = async () => {
+  
+    useEffect(() => {
+      const fetchBasket = async () => {
+        const loggedIn = await checkLoggedIn();
+        setIsLoggedIn(loggedIn);
+  
+        if (loggedIn) {
+          try {
+            const response = await httpClient.get("/get-basket");
+            setBasket(response.data.basket);
+          } catch (error) {
+            console.error("Error fetching basket:", error);
+          }
+        } else {
+          const savedBasket = localStorage.getItem('basket');
+          if (savedBasket) {
+            setBasket(JSON.parse(savedBasket));
+          }
+        }
+      };
+  
+      fetchBasket();
+    }, []);
+  
+    const updateBasket = async (updatedBasket) => {
+      setBasket(updatedBasket);
+  
       if (isLoggedIn) {
         try {
-          const response = await httpClient.get("/get-basket");
-          setBasket(response.data.basket);
+          await httpClient.post("/update-basket", { basket: updatedBasket });
         } catch (error) {
-          console.error("Error fetching basket:", error);
-
+          console.error("Error updating server basket:", error);
         }
       } else {
-        console.log("NOPE")
-        const savedBasket = localStorage.getItem('basket');
-        if (savedBasket) {
-          setBasket(JSON.parse(savedBasket));
-        }
+        localStorage.setItem('basket', JSON.stringify(updatedBasket));
+      }
+    };
+  
+    const handleCheckout = () => {
+      if (!isLoggedIn) {
+        toast.error('You must be logged in to checkout.');
+        navigate('/login');
+      } else {
+        navigate('/checkout');
       }
     };
 
-    fetchBasket();
-  }, [isLoggedIn]);
-
-  const updateBasket = async (updatedBasket) => {
-    setBasket(updatedBasket);
-
-    if (isLoggedIn) {
-      try {
-        await httpClient.post("/update-basket", { basket: updatedBasket });
-      } catch (error) {
-        console.error("Error updating server basket:", error);
-      }
-    } else {
-      localStorage.setItem('basket', JSON.stringify(updatedBasket));
-    }
-  };
+  
 
   const handleQuantityChange = (productId, selectedSize, newQuantity) => {
     const updatedBasket = basket.map(item =>
       item.id === productId && item.selectedSize === selectedSize
-        ? { ...item, quantity: Math.max(1, newQuantity) } // Ensure quantity is at least 1
+        ? { ...item, quantity: Math.max(1, newQuantity) }
         : item
     );
-  
     updateBasket(updatedBasket);
   };
 
@@ -69,15 +78,6 @@ const Cart = () => {
     updateBasket(updatedBasket);
   };
 
-  const handleCheckout = () => {
-    // Verify user is logged in first
-    if (!isLoggedIn) {
-      toast.error('You must be logged in to checkout.');
-      navigate('/login');
-    } else {
-      navigate('/checkout');
-    }
-  }
 
   const calculateTotal = () => {
     return basket.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
@@ -88,7 +88,8 @@ const Cart = () => {
   };
 
   const handleLogout = async () => {
-    await logout();
+    await httpClient.post('/logout'); // Ensure this endpoint logs the user out
+    setIsLoggedIn(false);
     navigate('/');
   };
 
@@ -122,21 +123,21 @@ const Cart = () => {
           </div>
           {menuOpen && (
             <div className="menu-links-about">
-            <ul>
-            {isLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
-              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
-            </ul>
+              <ul>
+                {isLoggedIn ? (
+                  <>
+                    <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                    <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                  </>
+                ) : (
+                  <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+                )}
+                <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+                <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+                <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+                <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+                <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+              </ul>
             </div>
           )}
         </div>
