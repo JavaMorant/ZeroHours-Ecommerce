@@ -8,7 +8,6 @@ import httpClient from './httpClients.ts';
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [showCartDropdown, setShowCartDropdown] = useState(false);
   const navigate = useNavigate();
 
@@ -34,13 +33,14 @@ function App() {
     checkLoginStatus();
   }, []);
 
-// Utility function to toggle the hamburger menu
-const toggleMenu = () => {
-  const menu = document.querySelector(".menu-links-app");
-  const icon = document.querySelector(".hamburger-icon");
-  menu.classList.toggle("open");
-  icon.classList.toggle("open");
-};
+  // Utility function to toggle the hamburger menu
+  const toggleMenu = () => {
+    const menu = document.querySelector(".menu-links-app");
+    const icon = document.querySelector(".hamburger-icon");
+    menu.classList.toggle("open");
+    icon.classList.toggle("open");
+  };
+
   const handleLogout = async () => {
     await httpClient.post('/logout'); // Ensure this endpoint logs the user out
     setIsLoggedIn(false);
@@ -54,7 +54,7 @@ const toggleMenu = () => {
   return (
     <div className="App">
       <video className="background-video" autoPlay loop muted>
-        <source src={"./Assets/vids/Trailer.mp4"} type="video/mp4" />
+        <source src={"./Assets/vids/TrailerLarge.mp4"} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
@@ -87,7 +87,7 @@ const toggleMenu = () => {
             <span></span>
             <span></span>
           </div>
-          <div className={`menu-links-app ${menuOpen ? 'open' : ''}`}>
+          <div className="menu-links-app">
             {isLoggedIn ? (
               <>
                 <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
