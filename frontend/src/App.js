@@ -34,10 +34,13 @@ function App() {
     checkLoginStatus();
   }, []);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
+// Utility function to toggle the hamburger menu
+const toggleMenu = () => {
+  const menu = document.querySelector(".menu-links-app");
+  const icon = document.querySelector(".hamburger-icon");
+  menu.classList.toggle("open");
+  icon.classList.toggle("open");
+};
   const handleLogout = async () => {
     await httpClient.post('/logout'); // Ensure this endpoint logs the user out
     setIsLoggedIn(false);
@@ -51,7 +54,7 @@ function App() {
   return (
     <div className="App">
       <video className="background-video" autoPlay loop muted>
-        <source src={"./Assets/vids/trailerLarge.mp4"} type="video/mp4" />
+        <source src={"./Assets/vids/Trailer.mp4"} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 

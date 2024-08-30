@@ -22,7 +22,7 @@ const LoginPage = () => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       const loggedIn = await checkLoggedIn(); // use the function imported from Auth
-      setLoggedInState(loggedIn); // update the state variable
+      setLoggedInState(loggedIn);
       if (loggedIn) {
         toast.info("You are already logged in");
         navigate("/");
@@ -52,7 +52,7 @@ const LoginPage = () => {
         }
       } else {
         const response = await httpClients.post("/login", { email, password });
-        if (response.data.isAuthenticated) {
+        if (response.data.is_authenticated) {
           setLoggedInState(true);
           toast.success("Successfully logged in");
           navigate("/");

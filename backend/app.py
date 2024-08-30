@@ -124,13 +124,12 @@ def login_user_route():
         session['_user_id'] = str(user.id) 
         print(session)
         if current_user.is_authenticated:
+            print("here")
             return jsonify({
-                "id": str(user.id),
+                "id": str(current_user.id),
                 "email": user.email,
-                "isAuthenticated": True
+                "is_authenticated": True
             }), 200
-        else:
-            return jsonify({"error": "Invalid credentials"}), 401
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
@@ -180,8 +179,10 @@ def serve_hover_image(product_name, filename):
 @app.route("/check-login")
 def check_login():
     if current_user.is_authenticated:
+        print("yes")
         return jsonify({"is_authenticated": True, "user_id": current_user.id}), 200
     else:
+        print("no")
         return jsonify({"is_authenticated": False}), 200
 
 #Retrieve the current user's basket
