@@ -54,7 +54,7 @@ function App() {
   return (
     <div className="App">
       <video className="background-video" autoPlay loop muted>
-        <source src={"./Assets/vids/TrailerLarge.mp4"} type="video/mp4" />
+        <source src={"./Assets/vids/0 HOURS-41"}  />
         Your browser does not support the video tag.
       </video>
 
