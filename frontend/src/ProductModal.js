@@ -6,7 +6,6 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openDropdown, setOpenDropdown] = useState(null);
   
-
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.key === 'Escape') {
@@ -60,7 +59,13 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
     }
   };
 
-  
+  // Define the order you want the sizes to appear
+  const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL', 'One Size']; // Example order
+
+  // Sort sizes according to the predefined order
+  const sortedSizes = sizeOrder
+    .filter(size => product.sizes[size] !== undefined) // Filter out sizes that don't exist in the product
+    .map(size => ({ size, count: product.sizes[size] }));
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -109,7 +114,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
             </div>
 
             <div className="size-selection">
-              {Object.entries(product.sizes).map(([size, count]) => (
+              {sortedSizes.map(({ size, count }) => (
                 <div
                   key={size}
                   className={`size-box ${count > 0 ? 'available' : 'unavailable'} ${size === selectedSize ? 'selected' : ''}`}
