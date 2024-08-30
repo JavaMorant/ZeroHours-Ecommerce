@@ -7,60 +7,57 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { isLoggedIn as checkLoggedIn } from './Auth';
 
-
 const Cart = () => {
   const [basket, setBasket] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const navigate = useNavigate();
-  
-    useEffect(() => {
-      const fetchBasket = async () => {
-        const loggedIn = await checkLoggedIn();
-        setIsLoggedIn(loggedIn);
-  
-        if (loggedIn) {
-          try {
-            const response = await httpClient.get("/get-basket");
-            setBasket(response.data.basket);
-          } catch (error) {
-            console.error("Error fetching basket:", error);
-          }
-        } else {
-          const savedBasket = localStorage.getItem('basket');
-          if (savedBasket) {
-            setBasket(JSON.parse(savedBasket));
-          }
-        }
-      };
-  
-      fetchBasket();
-    }, []);
-  
-    const updateBasket = async (updatedBasket) => {
-      setBasket(updatedBasket);
-  
-      if (isLoggedIn) {
+
+  useEffect(() => {
+    const fetchBasket = async () => {
+      const loggedIn = await checkLoggedIn();
+      setIsLoggedIn(loggedIn);
+
+      if (loggedIn) {
         try {
-          await httpClient.post("/update-basket", { basket: updatedBasket });
+          const response = await httpClient.get("/get-basket");
+          setBasket(response.data.basket);
         } catch (error) {
-          console.error("Error updating server basket:", error);
+          console.error("Error fetching basket:", error);
         }
       } else {
-        localStorage.setItem('basket', JSON.stringify(updatedBasket));
-      }
-    };
-  
-    const handleCheckout = () => {
-      if (!isLoggedIn) {
-        toast.error('You must be logged in to checkout.');
-        navigate('/login');
-      } else {
-        navigate('/checkout');
+        const savedBasket = localStorage.getItem('basket');
+        if (savedBasket) {
+          setBasket(JSON.parse(savedBasket));
+        }
       }
     };
 
-  
+    fetchBasket();
+  }, []);
+
+  const updateBasket = async (updatedBasket) => {
+    setBasket(updatedBasket);
+
+    if (isLoggedIn) {
+      try {
+        await httpClient.post("/update-basket", { basket: updatedBasket });
+      } catch (error) {
+        console.error("Error updating server basket:", error);
+      }
+    } else {
+      localStorage.setItem('basket', JSON.stringify(updatedBasket));
+    }
+  };
+
+  const handleCheckout = () => {
+    if (!isLoggedIn) {
+      toast.error('You must be logged in to checkout.');
+      navigate('/login');
+    } else {
+      navigate('/checkout');
+    }
+  };
 
   const handleQuantityChange = (productId, selectedSize, newQuantity) => {
     const updatedBasket = basket.map(item =>
@@ -78,7 +75,6 @@ const Cart = () => {
     updateBasket(updatedBasket);
   };
 
-
   const calculateTotal = () => {
     return basket.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
@@ -88,7 +84,7 @@ const Cart = () => {
   };
 
   const handleLogout = async () => {
-    await httpClient.post('/logout'); // Ensure this endpoint logs the user out
+    await httpClient.post('/logout');
     setIsLoggedIn(false);
     navigate('/');
   };
@@ -114,6 +110,7 @@ const Cart = () => {
           </ul>
         </div>
       </nav>
+
       <nav id="hamburger-nav-about">
         <div className="hamburger-menu-about">
           <div className="hamburger-icon-about" onClick={toggleMenu}>
@@ -142,6 +139,7 @@ const Cart = () => {
           )}
         </div>
       </nav>
+
       <div id="cart-container-about">
         <img 
           src="./assets/img/icons8-cart-64.png" 
@@ -150,11 +148,13 @@ const Cart = () => {
           onClick={() => window.location.href='/cart'} 
         />
       </div>
+      
       <div id="logo-container-about">
         <Link to="/">
           <img src="./assets/img/logo_nobg.png" alt="Our Logo" className="logo" />
         </Link>
       </div>
+      
       <div id="socials-container-about">
         <img 
           src="./assets/img/icons8-instagram-24.png" 
@@ -181,6 +181,7 @@ const Cart = () => {
           onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
         />
       </div>
+
       <div className="cart-container">
         <h2>Your Basket</h2>
         {basket.length === 0 ? (

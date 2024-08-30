@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import httpClients from './httpClients.ts'; 
 import './Shipping.css';
 import './AboutUs.css';
 
 const Shipping = () => {
-  const [, setBasket] = useState([]);
-  const [isLoggedIn, logout] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -36,36 +34,30 @@ const Shipping = () => {
     }
   ];
 
-  useEffect(() => {
-    const initializeBasket = async () => {
-      const userToken = localStorage.getItem('userToken');
-
-      if (userToken) {
-        try {
-          const response = await httpClients.get("//127.0.0.1:5000/get-basket");
-          setBasket(response.data.basket);
-        } catch (error) {
-          console.error("Error fetching basket:", error);
-        }
-      } else {
-        const savedBasket = localStorage.getItem('basket');
-        if (savedBasket) {
-          setBasket(JSON.parse(savedBasket));
-        }
-      }
-    };
-
-    initializeBasket();
-  }, []);
-
-
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/');
+    try {
+      // Assuming the logout endpoint is a POST request
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include' // Include cookies if using session-based authentication
+      });
+
+      if (response.ok) {
+        // Clear any local auth state
+        setIsLoggedIn(false);
+        localStorage.removeItem('authToken'); // Clear token or auth state if stored locally
+        navigate('/'); // Navigate to the homepage after logout
+      } else {
+        // Handle server errors
+        console.error('Failed to logout');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
@@ -132,7 +124,7 @@ const Shipping = () => {
             ref={menuRef}
           >
             <ul>
-            {isLoggedIn ? (
+              {isLoggedIn ? (
                 <>
                   <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
                   <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>

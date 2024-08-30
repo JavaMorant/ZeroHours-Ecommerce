@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './AboutUs.css';
-import httpClient from './httpClients.ts';
-import { isLoggedIn } from './Auth';
+import { isLoggedIn } from './Auth'; // Function to check login status
 
 // Utility function to toggle the hamburger menu
 const toggleMenu = () => {
@@ -14,7 +13,7 @@ const toggleMenu = () => {
 
 const AboutUs = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false); // Fixed the state naming
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,11 +26,21 @@ const AboutUs = () => {
 
   const handleLogout = async () => {
     try {
-      await httpClient.post('/logout'); // Ensure this endpoint logs the user out
-      setIsUserLoggedIn(false);
-      navigate('/');
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include', // Include cookies if using session-based authentication
+      });
+
+      if (response.ok) {
+        // Clear any local auth state
+        setIsUserLoggedIn(false);
+        localStorage.removeItem('authToken'); // Clear token or auth state if stored locally
+        navigate('/'); // Navigate to the homepage after logout
+      } else {
+        console.error('Failed to logout');
+      }
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Logout error:', error);
     }
   };
 
@@ -88,6 +97,8 @@ const AboutUs = () => {
           </div>
         </div>
       </div>
+
+      {/* Desktop Navigation */}
       <nav id="desktop-nav">
         <div>
           <ul className="nav-links">
@@ -107,6 +118,8 @@ const AboutUs = () => {
           </ul>
         </div>
       </nav>
+
+      {/* Hamburger Navigation for Mobile */}
       <nav id='hamburger-nav-about'>
         <div className="hamburger-menu-about">
           <div className="hamburger-icon-about" onClick={toggleMenu}>
@@ -115,30 +128,38 @@ const AboutUs = () => {
             <span></span>
           </div>
           <div className="menu-links-about">
-            {isUserLoggedIn ? (
-              <>
-                <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-              </>
-            ) : (
-              <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-            )}
-            <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-            <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-            <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-            <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-            <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            <ul>
+              {isUserLoggedIn ? (
+                <>
+                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                </>
+              ) : (
+                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+              )}
+              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            </ul>
           </div>
         </div>
       </nav>
+
+      {/* Cart Icon */}
       <div id='cart-container-about'>
         <img src="./assets/img/icons8-cart-64.png" alt="Cart" className="icon" onClick={() => window.location.href='/cart'} />
       </div>
+
+      {/* Logo */}
       <div id="logo-container-about">
         <Link to="/">
           <img src='./assets/img/logo_nobg.png' alt="Our Logo" className="logo" />
         </Link>
       </div>
+
+      {/* Social Media Links */}
       <div id="socials-container-about">
         <img src="./assets/img/icons8-instagram-24.png" alt="Our Instagram" className="icon" onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} />
         <img src="./assets/img/icons8-tiktok-24.png" alt="Our TikTok" className="icon" onClick={() => window.location.href='https://www.tiktok.com/@hourszero'} />

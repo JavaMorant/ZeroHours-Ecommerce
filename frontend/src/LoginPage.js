@@ -4,7 +4,7 @@ import httpClients from "./httpClients.ts";
 import { isLoggedIn as checkLoggedIn} from "./Auth";
 import "./LoginPage.css";
 import "./AboutUs.css";
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -13,7 +13,7 @@ const LoginPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedInState, setLoggedInState] = useState(false); // renamed state variable
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const iconRef = useRef(null);
@@ -21,8 +21,8 @@ const LoginPage = () => {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const loggedIn = await isLoggedIn();
-      setIsLoggedIn(loggedIn);
+      const loggedIn = await checkLoggedIn(); // use the function imported from Auth
+      setLoggedInState(loggedIn); // update the state variable
       if (loggedIn) {
         toast.info("You are already logged in");
         navigate("/");
@@ -30,7 +30,7 @@ const LoginPage = () => {
     };
 
     checkLoginStatus();
-  }, [navigate, isLoggedIn]);  
+  }, [navigate, loggedInState]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,12 +38,12 @@ const LoginPage = () => {
     setSuccessMessage("");
 
     try {
-        const loggedIn = await checkLoggedIn();
-        if (loggedIn) {
-          toast.info("You are already logged in");
-          navigate("/");
-          return;
-        }
+      const loggedIn = await checkLoggedIn();
+      if (loggedIn) {
+        toast.info("You are already logged in");
+        navigate("/");
+        return;
+      }
 
       if (isSignUp) {
         const response = await httpClients.post("/register", { email, password, name });
@@ -53,7 +53,7 @@ const LoginPage = () => {
       } else {
         const response = await httpClients.post("/login", { email, password });
         if (response.data.isAuthenticated) {
-          setIsLoggedIn(true);
+          setLoggedInState(true);
           toast.success("Successfully logged in");
           navigate("/");
         } else {

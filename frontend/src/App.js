@@ -54,6 +54,8 @@ function App() {
         <source src={"./Assets/vids/trailerLarge.mp4"} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
+
+      {/* Desktop Navigation */}
       <nav id="desktop-nav">
         <div>
           <ul className="nav-links-app">
@@ -73,6 +75,8 @@ function App() {
           </ul>
         </div>
       </nav>
+
+      {/* Mobile Navigation */}
       <nav id='hamburger-nav'>
         <div className="hamburger-menu">
           <div className="hamburger-icon" onClick={toggleMenu}>
@@ -95,6 +99,8 @@ function App() {
           </div>
         </div>
       </nav>
+
+      {/* Shop Link */}
       <div id='shop-container'>
         <h1>
           <Link to="/shop">
@@ -103,6 +109,7 @@ function App() {
         </h1>
       </div>
 
+      {/* Cart Icon with Dropdown */}
       <div id='cart-container'>
         <img 
           src="./assets/img/icons8-cart-64.png" 
@@ -118,9 +125,15 @@ function App() {
           </div>
         )}
       </div>
+
+      {/* Logo */}
       <div id="logo-container">
-        <img src='./assets/img/logo_nobg.png' alt="Logo" className="logo"/>
+        <Link to="/">
+          <img src='./assets/img/logo_nobg.png' alt="Logo" className="logo"/>
+        </Link>
       </div>
+
+      {/* Social Media Icons */}
       <div id="socials-container">
         <img src="./assets/img/icons8-instagram-24.png" alt="Instagram" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')}/>
         <img src="./assets/img/icons8-tiktok-24.png" alt="TikTok" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')}/>
