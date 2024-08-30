@@ -161,7 +161,7 @@ body, html {
 
 .hamburger-menu-about {
     position: relative;
-    z-index: 999; /* High z-index to ensure it appears on top of other elements */
+    z-index: 100000; /* High z-index to ensure it appears on top of other elements */
   }
 
 .hamburger-icon-about {
@@ -180,7 +180,7 @@ body, html {
   height: 1px;
   transition: all 0.3s ease-in-out;
   user-select: none;
-  z-index: 1000;
+  z-index: 100000;
 }
 
 

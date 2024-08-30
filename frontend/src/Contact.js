@@ -117,7 +117,7 @@ export default function Contact() {
             <span></span>
           </div>
           <div className={`menu-links-about ${menuOpen ? 'open' : ''}`}>
-            <ul>
+          <ul>
               {isLoggedIn ? (
                 <>
                   <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
@@ -128,6 +128,8 @@ export default function Contact() {
               )}
               <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
               <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
               <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
             </ul>
           </div>

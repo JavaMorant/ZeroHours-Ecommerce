@@ -60,11 +60,11 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
   };
 
   // Define the order you want the sizes to appear
-  const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL', 'One Size']; // Example order
+  const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL', 'One Size']; 
 
   // Sort sizes according to the predefined order
   const sortedSizes = sizeOrder
-    .filter(size => product.sizes[size] !== undefined) // Filter out sizes that don't exist in the product
+    .filter(size => product.sizes[size] !== undefined)
     .map(size => ({ size, count: product.sizes[size] }));
 
   return (
