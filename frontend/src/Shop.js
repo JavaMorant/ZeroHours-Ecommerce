@@ -5,10 +5,10 @@ import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import httpClient from './httpClients.ts';
 import LoadingScreen from './LoadingScreen';
-import { isLoggedIn as checkLoggedIn } from './Auth'; // Import the authentication function
+import { isLoggedIn as checkLoggedIn } from './Auth';
 
 const Shop = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate;
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,8 +30,13 @@ const Shop = () => {
     const fetchData = async () => {
       try {
         const productResponse = await httpClient.get('/products');
-        setProducts(productResponse.data);
-        setFilteredProducts(productResponse.data);
+        if (Array.isArray(productResponse.data.products)) {
+          console.log('Product data received:', productResponse.data);
+          setProducts(productResponse.data.products);
+          setFilteredProducts(productResponse.data.products);
+        } else {
+          throw new Error('Products data is not an array');
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
         setError(error);
@@ -52,12 +57,14 @@ const Shop = () => {
   }, [loading]);
 
   useEffect(() => {
-    setFilteredProducts(
-      products.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        (selectedCategory === '' || product.type === selectedCategory)
-      )
-    );
+    if (Array.isArray(products)) {
+      setFilteredProducts(
+        products.filter(product =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          (selectedCategory === '' || product.type === selectedCategory)
+        )
+      );
+    }
   }, [searchQuery, selectedCategory, products]);
 
   useEffect(() => {
@@ -114,13 +121,13 @@ const Shop = () => {
     if (isLoggedIn) {
       try {
         await httpClient.post("/update-basket", { basket: updatedBasket });
-        // Optionally add a success message
+        // Toastify success
       } catch (error) {
         console.error("Error updating server basket:", error);
       }
     } else {
       localStorage.setItem('basket', JSON.stringify(updatedBasket));
-      // Optionally add a success message
+      // Toastify success
     }
   };
 
@@ -204,25 +211,25 @@ const Shop = () => {
 
           {error && <p className="error-message">Error loading products: {error.message}</p>}
           {!error && (
-            <>
-              {filteredProducts.length === 0 ? (
-                <div className='none-found'>
-                  <h1>NO ITEMS FOUND</h1>
-                  <img src='./assets/img/zerohourslogo.jpeg' alt='No items found' />
-                </div>
-              ) : (
-                <div className="products">
-                  {filteredProducts.map(product => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onClick={handleProductClick}
-                      onImageLoad={handleImageLoad} 
-                    />
-                  ))}
-                </div>
-              )}
-            </>
+                    <>
+                    {filteredProducts.length === 0 ? (
+                      <div className='none-found'>
+                        <h1>NO ITEMS FOUND</h1>
+                        <img src='./assets/img/zerohourslogo.jpeg' alt='No items found' />
+                      </div>
+                    ) : (
+                      <div className="products">
+                        {filteredProducts.map(product => (
+                          <ProductCard
+                            key={product.id}
+                            product={product}
+                            onClick={handleProductClick}
+                            onImageLoad={handleImageLoad} 
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
           )}
 
           <nav id='hamburger-nav-about'>

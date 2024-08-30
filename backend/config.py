@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import os
-import redis
 
 load_dotenv()
 
@@ -11,7 +10,11 @@ class ApplicationConfig:
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_DATABASE_URI = r"sqlite:///./db.sqlite"
 
-    SESSION_TYPE = "redis"
-    SESSION_PERMANENT =True
-    SESSION_USE_SIGNER = True
-    SESSION_REDIS = redis.from_url("redis://127.0.0.1:6379")
+    # Flask-Login settings
+    LOGIN_DISABLED = False
+    USE_SESSION_FOR_NEXT = True
+    REMEMBER_COOKIE_DURATION = 2592000  # 30 days in seconds
+
+    # Session settings (using Flask's default session handling)
+    SESSION_PERMANENT = True
+    PERMANENT_SESSION_LIFETIME = 2592000  # 30 days in seconds

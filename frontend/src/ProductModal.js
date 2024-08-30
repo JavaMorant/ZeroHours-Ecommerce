@@ -5,7 +5,6 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
   const [selectedSize, setSelectedSize] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openDropdown, setOpenDropdown] = useState(null);
-  
 
   useEffect(() => {
     const handleEsc = (event) => {
@@ -20,7 +19,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
 
   if (!product) return null;
 
-  const images = [product.photo, ...(Array.isArray(product.hover_images) ? product.hover_images.map(img => img) : [])];
+  const images = [product.photo, ...(Array.isArray(product.hover_images) ? product.hover_images : [])];
 
   const nextImage = () => {
     setCurrentImageIndex((currentImageIndex + 1) % images.length);
@@ -43,30 +42,33 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
   };
 
   const handleSizeClick = (size) => {
-    if (product.sizes[size] > 0) {
+    if (product.sizes && product.sizes[size] > 0) {
       setSelectedSize(size);
     }
   };
 
-  const handleAddToCart = () => {
+  // Filter out sizes with zero quantity
+  const availableSizes = Object.entries(product.sizes)
+    .filter(([_, count]) => count > 0)
+    .reduce((acc, [size, count]) => ({ ...acc, [size]: count }), {});
+
+ const handleAddToCart = () => {
     if (selectedSize) {
       const itemToAdd = {
         ...product,
         selectedSize: selectedSize 
       };
       addToBasket(itemToAdd, selectedSize);
-
       onClose(); 
     }
   };
 
-  
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
         <span className="close-button" onClick={onClose}>&times;</span>
-        
+
         <div className="modal-body">
           <div className="image-carousel">
             <img 
@@ -89,7 +91,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
               ))}
             </div>
           </div>
-          
+
           <div className="modal-details">
             <h2>{product.name}</h2>
             <p className="price">£{product.price}</p>
@@ -108,19 +110,21 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
               </div>
             </div>
 
-            <div className="size-selection">
-              {Object.entries(product.sizes).map(([size, count]) => (
-                <div
-                  key={size}
-                  className={`size-box ${count > 0 ? 'available' : 'unavailable'} ${size === selectedSize ? 'selected' : ''}`}
-                  onClick={() => handleSizeClick(size)}
-                >
-                  {size}
-                  {count <= 0 && <span className="crossed-out">Out of stock</span>}
-                </div>
-              ))}
-            </div>
-            
+            {product.sizes && (
+              <div className="size-selection">
+                {Object.entries(product.sizes).map(([size, count]) => (
+                  <div
+                    key={size}
+                    className={`size-box ${count > 0 ? 'available' : 'unavailable'} ${size === selectedSize ? 'selected' : ''}`}
+                    onClick={() => handleSizeClick(size)}
+                  >
+                    {size}
+                    {count <= 0 && <span className="crossed-out">Out of stock</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+
             <button 
               className="add-to-cart-button" 
               disabled={!selectedSize}

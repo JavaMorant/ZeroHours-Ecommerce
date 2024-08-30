@@ -11,22 +11,54 @@ db = SQLAlchemy()
 def get_uuid():
     return uuid4().hex
 
+from flask_sqlalchemy import SQLAlchemy
+from uuid import uuid4
+from flask_login import UserMixin
+from sqlalchemy import func
+from werkzeug.security import generate_password_hash, check_password_hash
+
+db = SQLAlchemy()
+
+def get_uuid():
+    return uuid4().hex
+
 class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     email = db.Column(db.String(345), unique=True, nullable=False)
-    password = db.Column(db.Text, nullable=False)
+    _password = db.Column('password', db.Text, nullable=False)
     email_verified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     last_online = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
-    basket_items = relationship('Basket', back_populates='user')
+    basket_items = relationship('Basket', back_populates='user', cascade='all, delete-orphan')
     orders = relationship('Order', back_populates='user')
 
     def __repr__(self):
         return f'<User {self.email}>'
+
     def get_id(self):
         return str(self.id)
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self._password = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self._password, password)
+
+    @property
+    def is_active(self):
+        return self.email_verified
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.email is not None and self.email.strip():
+            self.email = self.email.lower()
 
 class Products(db.Model):
     __tablename__ = "products"

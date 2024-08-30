@@ -1,12 +1,14 @@
-from flask import Flask, jsonify, request, session, url_for, send_from_directory
+from datetime import timedelta
+from flask import Flask, jsonify, make_response, request, session, url_for, send_from_directory
 from flask_bcrypt import Bcrypt
-from models import Basket, db, User, Products
+from models import Basket, Order, OrderItem, db, User, Products
 from config import ApplicationConfig
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import os
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import stripe
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
@@ -27,6 +29,10 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'awanded75@gmail.com'  # Your email
 app.config['MAIL_PASSWORD'] = 'rllv vpzm nonn uubg'
 app.config['MAIL_DEFAULT_SENDER'] = 'awanded75@gmail.com'
+
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=14)  # Set remember me cookie duration
+app.config['REMEMBER_COOKIE_SECURE'] = True  # Use secure cookies in production
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True  # Prevent cookie access through JavaScript
 
 # Initialize Flask-Mail
 mail = Mail(app)
@@ -49,9 +55,8 @@ with app.app_context():
 migrate = Migrate(app, db) 
 
 @login_manager.user_loader
-def load_user(_user_id):
-    # This function is used by Flask-Login to reload the user object from the user ID stored in the session
-    return User.query.get(_user_id) 
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 def send_verification_email(email):
     # Generate a secure token for email verification
@@ -64,18 +69,14 @@ def send_verification_email(email):
 
 @app.route("/register", methods=["POST"])
 def register_user():
-    # Handle user registration
     email = request.json["email"]
     password = request.json["password"]
 
-    # Check if user already exists
     user_exists = User.query.filter_by(email=email).first() is not None
     if user_exists:
         return jsonify({"error": "User already exists"}), 409
 
-    # Create new user with hashed password
-    hashed_password = bcrypt.generate_password_hash(password)
-    new_user = User(email=email, password=hashed_password, email_verified=False)
+    new_user = User(email=email, password=password)
     db.session.add(new_user)
     db.session.commit()
 
@@ -105,13 +106,21 @@ def verify_email(token):
     else:
         return jsonify({"error": "User not found"}), 404
 
+# Update your logout route
 @app.route("/logout", methods=["POST"])
+@login_required
 def logout():
     logout_user()
-    print("here")
-    return jsonify({"message": "Successfully logged out"}), 200
-    
-# Log in the current user
+    response = make_response(jsonify({"message": "Successfully logged out"}))
+    response.delete_cookie('remember_token')  # Clear the remember_token cookie
+    return response, 200
+
+# Add an error handler for unauthorized access
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({"error": "Unauthorized access"}), 401
+
+# Update your login route
 @app.route("/login", methods=["POST"])
 def login_user_route():
     email = request.json["email"]
@@ -119,64 +128,16 @@ def login_user_route():
 
     user = User.query.filter_by(email=email).first()
 
-    if user and bcrypt.check_password_hash(user.password, password):
+    if user and user.verify_password(password):
         login_user(user, remember=True)
-        session['_user_id'] = str(user.id) 
-        print(session)
-        if current_user.is_authenticated:
-            return jsonify({
-                "id": str(user.id),
-                "email": user.email,
-                "isAuthenticated": True
-            }), 200
-        else:
-            return jsonify({"error": "Invalid credentials"}), 401
+        return jsonify({
+            "id": user.id,
+            "email": user.email,
+            "isAuthenticated": True
+        }), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
-# Helper function to get all image URLs from the assets/NAME/ folder
-def get_hover_images(product_name):
-    folder_path = os.path.join('../frontend/public/Assets/img/', product_name)
-    if not os.path.exists(folder_path):
-        print("none")
-        return []
-    return [url_for('serve_hover_image', product_name=product_name, filename=img) for img in os.listdir(folder_path)]
-
-def size_option(product):
-    if product.type == 'sock':
-        return {'One Size': product.scount}
-    return {
-            'S': product.scount,
-            'M': product.mcount,
-            'L': product.lcount,
-            'XL': product.xlcount,
-            'XXL': product.xxlcount,
-        }
-    
-@app.route('/products', methods=['GET'])
-def get_products():
-    print("Received request to /products") 
-    products = Products.query.all()
-    product_list = [{
-        'id': product.id,
-        'type': product.type,
-        'name': product.name,
-        'price': product.price,
-        'photo': product.photo,
-        'hover_images': get_hover_images(product.hover_image), 
-        'sizes': size_option(product),
-        'description': product.description
-    } for product in products]
-    
-    print("Returning products:", product_list)
-    return jsonify(product_list)
-
-@app.route('/Assets/img/<product_name>/<filename>')
-def serve_hover_image(product_name, filename):
-    folder_path = os.path.join('Assets/img', product_name)
-    return send_from_directory(folder_path, filename)
-
-# Check if the user is currently logged in
 @app.route("/check-login")
 def check_login():
     if current_user.is_authenticated:
@@ -184,20 +145,12 @@ def check_login():
     else:
         return jsonify({"is_authenticated": False}), 200
 
-#Retrieve the current user's basket
-@app.route("/get-basket", methods=['POST'])
+@app.route("/get-basket", methods=['GET'])
+@login_required
 def get_basket():
     try:
-        print(session)
-        print("test 1")
-        if not current_user.is_authenticated:
-            return jsonify({"error": "User not authenticated"}), 401
-        
         basket_items = Basket.query.filter_by(user_id=current_user.id).all()
-        print("test 2")
         basket = []
-        print("test 3")
-        print()
 
         for item in basket_items:
             product = item.product
@@ -214,82 +167,52 @@ def get_basket():
         print(e)   
         return jsonify({"error": "An error occurred while fetching the basket"}), 500
 
-    # print("Getting basket")
-    # app.logger.info(f"User {current_user.id if current_user.is_authenticated else 'Not authenticated'} is getting basket")
-    # try:
-    #     basket_items = Basket.query.filter_by(_user_id=current_user.id).all()
-    #     basket = []
-    #     for item in basket_items:
-    #         product = Products.query.get(item.product_id)
-    #         if product:
-    #             basket.append({
-    #                 # 'id': product.id,
-    #                 'name': product.name,
-    #                 'price': float(product.price),
-    #                 'quantity': item.quantity,
-    #                 'photo': product.photo,
-    #                 #Size?
-    #             })
-    #     return jsonify({"basket": basket})
-    # except Exception as e:
-    #     app.logger.error(f"Error in get_basket: {str(e)}")
-    #     return jsonify({"error": "An error occurred while fetching the basket"}), 500
-    
-# Update the current user's 
 @app.route("/update-basket", methods=["POST", "OPTIONS"])
+@login_required
 def update_basket():
     if request.method == "OPTIONS":
         return jsonify({"message": "OK"}), 200
 
-    app.logger.info(f"User ID from session: {session.get('_user_id')}")
-    app.logger.info(f"Current user authenticated: {current_user.is_authenticated}")
-    print(session)
     try:
         new_basket = request.json.get("basket")
-        
-        if current_user.is_authenticated:
-            # User is logged in, update database
-            Basket.query.filter_by(user_id=current_user.id).delete()
-            for item in new_basket:
-                basket_item = Basket(
-                    user_id=current_user.id,
-                    product_id=item['id'],
-                    quantity=item['quantity'],
-                    size=item['size']
-                )
-                db.session.add(basket_item)
-            db.session.commit()
-        else:
-            # User is not logged in, store in session
-            session['basket'] = new_basket
+
+        Basket.query.filter_by(user_id=current_user.id).delete()
+        for item in new_basket:
+            basket_item = Basket(
+                user_id=current_user.id,
+                product_id=item['id'],
+                quantity=item['quantity'],
+                size=item['size']
+            )
+            db.session.add(basket_item)
+        db.session.commit()
 
         return jsonify({"message": "Basket updated successfully"})
     except Exception as e:
         app.logger.error(f"Error in update_basket: {str(e)}")
         db.session.rollback()
         return jsonify({"error": "An error occurred while updating the basket"}), 500
+    
+@app.route("/products", methods=["GET"])
+def get_products():
+    products = Products.query.all()
+    products_data = [{
+        'id': product.id,
+        'name': product.name,
+        'description': product.description,
+        'price': float(product.price),
+        'photo': product.photo,
+        'type': product.type,
+        'sizes': {
+            'S': product.scount,
+            'M': product.mcount,
+            'L': product.lcount,
+            'XL': product.xlcount,
+            'XXL': product.xxlcount
+        }
+    } for product in products]
+    return jsonify({"products": products_data}), 200
 
-@app.route('/add-to-basket', methods=['POST'])
-@login_required
-def add_to_basket():
-    data = request.json
-    product_id = data.get('product_id')
-    quantity = data.get('quantity', 1)
-    
-    product = Products.query.get(product_id)
-    if not product:
-        return jsonify({'error': 'Product not found'}), 404
-    
-    basket_item = Basket.query.filter_by(user_id=current_user.id, product_id=product_id).first()
-    
-    if basket_item:
-        basket_item.quantity += quantity
-    else:
-        basket_item = Basket(user_id=current_user.id, product_id=product_id, quantity=quantity)
-        db.session.add(basket_item)
-    
-    db.session.commit()
-    return jsonify({'message': 'Item added to basket'}), 200
 
 
 # New route for creating a payment intent
