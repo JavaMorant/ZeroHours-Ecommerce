@@ -70,6 +70,25 @@ const LoginPage = () => {
   };
 
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include', // Include cookies if using session-based authentication
+      });
+
+      if (response.ok) {
+        // Clear any local auth state
+        setLoggedInState(false);
+        localStorage.removeItem('authToken'); // Clear token or auth state if stored locally
+        navigate('/'); // Navigate to the homepage after logout
+      } else {
+        console.error('Failed to logout');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
   // Function to toggle menu visibility
   const toggleMenu = () => {
     setMenuOpen(prevState => !prevState);
@@ -217,11 +236,19 @@ const LoginPage = () => {
             ref={menuRef} // Attach ref here
           >
            
-            <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-            <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-            <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-            <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-            <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+           {loggedInState ? (
+                <>
+                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
+                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                </>
+              ) : (
+                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
+              )}
+              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
           </div>
         </div>
       </nav>
