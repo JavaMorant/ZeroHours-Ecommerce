@@ -9,7 +9,16 @@ import stripe
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig())
 
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://master--stunning-sopapillas-f808db.netlify.app/"], "allow_headers": ["Content-Type", "Authorization"], "methods": ["GET", "POST", "OPTIONS"]}}, supports_credentials=True)
+# Configure CORS
+CORS(app, resources={r"/*": {
+    "origins": [
+        "http://localhost:3000", 
+        "https://master--stunning-sopapillas-f808db.netlify.app"
+    ],
+    "allow_headers": ["Content-Type", "Authorization"],
+    "methods": ["GET", "POST", "OPTIONS"]
+}}, supports_credentials=True)
+
 stripe.api_key = 'sk_test_51PpWYO2Lpl1R0iboAGzFAsq0DOYkjPpk6tH85n84fLrYpCDYrA3gcWVTsyWjWj0uGGT71l4ShgH6LOk4RB2SJQ3j002hYGjCIl'
 
 # Initialize Flask-SQLAlchemy
@@ -21,6 +30,15 @@ with app.app_context():
 migrate = Migrate(app, db)
 
 YOUR_DOMAIN = "http://localhost:3000"
+
+# Handle preflight OPTIONS requests
+@app.route('/products', methods=['OPTIONS'])
+def options():
+    response = jsonify()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
 
 def get_hover_images(product_name):
     folder_path = os.path.join('../frontend/public/Assets/img/', product_name)
