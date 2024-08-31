@@ -20,6 +20,8 @@ with app.app_context():
 # Initialize Flask-Migrate
 migrate = Migrate(app, db)
 
+YOUR_DOMAIN = "http://localhost:3000"
+
 def get_hover_images(product_name):
     folder_path = os.path.join('../frontend/public/Assets/img/', product_name)
     if not os.path.exists(folder_path):
@@ -121,6 +123,80 @@ def payment_success():
     except Exception as e:
         db.session.rollback()
         return jsonify(error=str(e)), 500
+    
+@app.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    try:
+        data = request.json
+        line_items = [{
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': item['name'],
+                },
+                'unit_amount': int(float(item['price']) * 100),  # Stripe expects amount in cents
+            },
+            'quantity': item['quantity'],
+        } for item in data['items']]
+
+        checkout_session = stripe.checkout.Session.create(
+            line_items=line_items,
+            mode='payment',
+            success_url=YOUR_DOMAIN + '/checkout?success=true',
+            cancel_url=YOUR_DOMAIN + '/checkout?canceled=true',
+            automatic_tax={'enabled': True},
+        )
+    except Exception as e:
+        return jsonify(error=str(e)), 400
+    
+    return jsonify(id=checkout_session.id)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    event = None
+    payload = request.data
+    sig_header = request.headers['STRIPE_SIGNATURE']
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, 'your_webhook_secret'
+        )
+    except ValueError as e:
+        # Invalid payload
+        return 'Invalid payload', 400
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return 'Invalid signature', 400
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        
+        # Create a new order
+        new_order = Order(
+            total_amount=session.amount_total / 100,  # Convert cents to dollars
+            status='paid',
+            customer_email=session.customer_details.email
+        )
+        db.session.add(new_order)
+        
+        # Add order items (you'll need to modify this based on your needs)
+        for item in session.line_items.data:
+            order_item = OrderItem(
+                order_id=new_order.id,
+                product_id=item.price.product,  # You might need to adjust this
+                quantity=item.quantity,
+                price=item.amount_total / 100,  # Convert cents to dollars
+                size='N/A'  # You'll need to figure out how to handle size
+            )
+            db.session.add(order_item)
+        
+        db.session.commit()
+
+    return 'Success', 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

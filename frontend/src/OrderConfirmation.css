@@ -1,0 +1,56 @@
+.order-confirmation {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .order-details {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  
+  .order-details ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .order-details li {
+    margin-bottom: 10px;
+  }
+  
+  .item-name {
+    font-weight: bold;
+  }
+  
+  .item-details {
+    margin-left: 20px;
+  }
+  
+  .order-total {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+  
+  .next-steps {
+    margin-top: 30px;
+  }
+  
+  .navigation-links {
+    margin-top: 30px;
+  }
+  
+  .home-link, .shop-link {
+    display: inline-block;
+    margin-right: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  
+  .shop-link {
+    background-color: #28a745;
+  }
