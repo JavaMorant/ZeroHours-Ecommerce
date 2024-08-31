@@ -28,8 +28,9 @@ const Shop = () => {
 
 
   useEffect(() => {
-    const apiUrl = process.env.REACT_APP_API_BASE_URL;
-
+    const apiUrl = "https://zerohours-fbbf2fc61221.herokuapp.com";
+    console.log('API URL:', apiUrl);
+ 
     const fetchData = async () => {
       try {
         const productResponse = await httpClient.get(`${apiUrl}/products`);

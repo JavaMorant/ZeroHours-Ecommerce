@@ -6,7 +6,9 @@ import "./Checkout.css";
 
 // Make sure to replace with your actual publishable key
 const stripePromise = loadStripe('pk_test_51PpWYO2Lpl1R0iboJQ53cfJkTYtZD5ed7IpAdHvVghxBQcvh2UjwtQE0AksqPTKKjLPMJ0GryqTZH3CVjSKAorKh00AMEf0Py3');
-const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const apiUrl = "https://zerohours-fbbf2fc61221.herokuapp.com";
+
+// process.env.REACT_APP_API_BASE_URL;
 
 const ProductDisplay = ({ basket, total, onCheckout }) => (
   <section className="product-display">

@@ -30,7 +30,7 @@ with app.app_context():
 # Initialize Flask-Migrate
 migrate = Migrate(app, db)
 
-YOUR_DOMAIN = "http://localhost:3000"
+DOMAIN_NAME = "http://localhost:3000"
 
 # Handle preflight OPTIONS requests
 @app.route('/products', methods=['OPTIONS'])
@@ -151,7 +151,7 @@ def create_checkout_session():
         data = request.json
         line_items = [{
             'price_data': {
-                'currency': 'usd',
+                'currency': 'gbp',
                 'product_data': {
                     'name': item['name'],
                 },
@@ -163,8 +163,8 @@ def create_checkout_session():
         checkout_session = stripe.checkout.Session.create(
             line_items=line_items,
             mode='payment',
-            success_url=YOUR_DOMAIN + '/checkout?success=true',
-            cancel_url=YOUR_DOMAIN + '/checkout?canceled=true',
+            success_url= DOMAIN_NAME + '/checkout?success=true',
+            cancel_url= DOMAIN_NAME + '/checkout?canceled=true',
             automatic_tax={'enabled': True},
         )
     except Exception as e:
