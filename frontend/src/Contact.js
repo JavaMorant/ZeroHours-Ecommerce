@@ -1,28 +1,54 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { contactConfig } from "./content_option";
 import { Link } from 'react-router-dom';
 import "./Contact.css";
 import "./AboutUs.css";
 
 export default function Contact() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    setIsLoggedIn(false);
-    window.location.href = '/';
-  };
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen); 
   };
-  
 
-  useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    setIsLoggedIn(!!userToken);
-  }, []);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitStatus('sending');
+
+    try {
+      const response = await fetch('/api/send-contact-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setSubmitStatus('error');
+    }
+  };
 
   return (
     <div className="container-contact">
@@ -47,7 +73,7 @@ export default function Contact() {
             <p>{contactConfig.description}</p>
           </div>
           <div className="col col-lg-7 d-flex align-items-center">
-            <form className="contact__form w-100">
+            <form className="contact__form w-100" onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col col-lg-6 form-group">
                   <input
@@ -57,6 +83,8 @@ export default function Contact() {
                     placeholder="Name"
                     type="text"
                     required
+                    value={formData.name}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="col col-lg-6 form-group">
@@ -67,6 +95,8 @@ export default function Contact() {
                     placeholder="Email"
                     type="email"
                     required
+                    value={formData.email}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -77,15 +107,19 @@ export default function Contact() {
                 placeholder="Message"
                 rows="5"
                 required
+                value={formData.message}
+                onChange={handleInputChange}
               ></textarea>
               <br />
               <div className="row">
                 <div className="col col-lg-12 form-group">
-                  <button className="btn ac_btn" type="submit">
-                    Send
+                  <button className="btn ac_btn" type="submit" disabled={submitStatus === 'sending'}>
+                    {submitStatus === 'sending' ? 'Sending...' : 'Send'}
                   </button>
                 </div>
               </div>
+              {submitStatus === 'success' && <p className="success-message">Message sent successfully!</p>}
+              {submitStatus === 'error' && <p className="error-message">Failed to send message. Please try again.</p>}
             </form>
           </div>
         </div>
@@ -93,14 +127,6 @@ export default function Contact() {
 
       <nav id="desktop-nav">
         <ul className="nav-links">
-          {isLoggedIn ? (
-            <>
-              <li><Link to="/account">ACCOUNT</Link></li>
-              <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
-            </>
-          ) : (
-            <li><Link to="/login">LOGIN</Link></li>
-          )}
           <li><Link to="/shop">SHOP</Link></li>
           <li><Link to="/about">OUR MESSAGE</Link></li>
           <li><Link to="/sizeguide">SIZE GUIDE</Link></li>
@@ -117,15 +143,7 @@ export default function Contact() {
             <span></span>
           </div>
           <div className={`menu-links-about ${menuOpen ? 'open' : ''}`}>
-          <ul>
-              {isLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
+            <ul>
               <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
               <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
               <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>

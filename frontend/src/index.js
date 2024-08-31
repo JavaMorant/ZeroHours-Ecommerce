@@ -15,10 +15,12 @@ import Size from './SizeGuide.js'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Checkout from './Checkout.js';
+import { BasketProvider } from './BasketContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <React.StrictMode>            <BasketProvider>
+
     <Router>
           <Routes>
             <Route path="/" element={<App />} />
@@ -32,7 +34,8 @@ root.render(
             <Route path="/checkout" element={<Checkout />} />
           </Routes>        
         <ToastContainer />
-    </Router>
+    </Router>            </BasketProvider>
+
   </React.StrictMode>
 );
 

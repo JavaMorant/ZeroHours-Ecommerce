@@ -4,7 +4,6 @@ import './Shipping.css';
 import './AboutUs.css';
 
 const Shipping = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -38,28 +37,6 @@ const Shipping = () => {
     setMenuOpen(!menuOpen);
   };
 
-  const handleLogout = async () => {
-    try {
-      // Assuming the logout endpoint is a POST request
-      const response = await fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'include' // Include cookies if using session-based authentication
-      });
-
-      if (response.ok) {
-        // Clear any local auth state
-        setIsLoggedIn(false);
-        localStorage.removeItem('authToken'); // Clear token or auth state if stored locally
-        navigate('/'); // Navigate to the homepage after logout
-      } else {
-        // Handle server errors
-        console.error('Failed to logout');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
   return (
     <div className="shipping-container">
       {/* Shipping Prices Title */}
@@ -91,14 +68,6 @@ const Shipping = () => {
       {/* Desktop Navigation */}
       <nav id="desktop-nav">
         <ul className="nav-links">
-          {isLoggedIn ? (
-            <>
-              <li><Link to="/account">ACCOUNT</Link></li>
-              <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
-            </>
-          ) : (
-            <li><Link to="/login">LOGIN</Link></li>
-          )}
           <li><Link to="/shop">SHOP</Link></li>
           <li><Link to="/about">OUR MESSAGE</Link></li>
           <li><Link to="/sizeguide">SIZE GUIDE</Link></li>
@@ -124,14 +93,6 @@ const Shipping = () => {
             ref={menuRef}
           >
             <ul>
-              {isLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
               <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
               <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
               <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
@@ -148,7 +109,7 @@ const Shipping = () => {
           src="./assets/img/icons8-cart-64.png" 
           alt="Cart" 
           className="icon" 
-          onClick={() => window.location.href='/cart'} 
+          onClick={() => navigate('/cart')} 
         />
       </div>
 
@@ -165,25 +126,25 @@ const Shipping = () => {
           src="./assets/img/icons8-instagram-24.png" 
           alt="Our Instagram" 
           className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
+          onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} 
         />
         <img 
           src="./assets/img/icons8-tiktok-24.png" 
           alt="Our TikTok" 
           className="icon" 
-          onClick={() => window.location.href='https://www.tiktok.com/@hourszero'} 
+          onClick={() => window.open('https://www.tiktok.com/@hourszero', '_blank')} 
         />
         <img 
           src="./assets/img/icons8-facebook-24.png" 
           alt="Our Facebook" 
           className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
+          onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} 
         />
         <img 
           src="./assets/img/icons8-X-50.png" 
           alt="Our X" 
           className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
+          onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} 
         />
       </div>
     </div>

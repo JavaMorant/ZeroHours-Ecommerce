@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Shop.css';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import httpClient from './httpClients.ts';
 import LoadingScreen from './LoadingScreen';
-import { isLoggedIn as checkLoggedIn } from './Auth'; // Import the authentication function
+import { BasketContext } from './BasketContext';
+import { toast } from 'react-toastify';
 
 const Shop = () => {
   const navigate = useNavigate();
+  const { basket, setBasket } = useContext(BasketContext);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,10 +20,8 @@ const Shop = () => {
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [basket, setBasket] = useState([]);
   const [imagesLoaded, setImagesLoaded] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Manage the login state
 
   const menuRef = useRef(null);
   const iconRef = useRef(null);
@@ -60,40 +60,11 @@ const Shop = () => {
     );
   }, [searchQuery, selectedCategory, products]);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const loggedIn = await checkLoggedIn();
-      setIsLoggedIn(loggedIn);
-    };
-
-    checkLoginStatus();
-  }, []);
-
-  useEffect(() => {
-    const initializeBasket = async () => {
-      if (isLoggedIn) {
-        try {
-          const response = await httpClient.get("/get-basket");
-          setBasket(response.data.basket);
-        } catch (error) {
-          console.error("Error fetching basket:", error);
-        }
-      } else {
-        const savedBasket = localStorage.getItem('basket');
-        if (savedBasket) {
-          setBasket(JSON.parse(savedBasket));
-        }
-      }
-    };
-
-    initializeBasket();
-  }, [isLoggedIn]);
-
   const handleImageLoad = () => {
     setImagesLoaded(prev => prev + 1);
   };
 
-  const addToBasket = async (product, selectedSize) => {
+  const addToBasket = (product, selectedSize) => {
     const existingProductIndex = basket.findIndex(
       item => item.id === product.id && item.selectedSize === selectedSize
     );
@@ -110,28 +81,7 @@ const Shop = () => {
     }
 
     setBasket(updatedBasket);
-
-    if (isLoggedIn) {
-      try {
-        await httpClient.post("/update-basket", { basket: updatedBasket });
-        // Optionally add a success message
-      } catch (error) {
-        console.error("Error updating server basket:", error);
-      }
-    } else {
-      localStorage.setItem('basket', JSON.stringify(updatedBasket));
-      // Optionally add a success message
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await httpClient.post('/logout'); // Ensure this endpoint logs the user out
-      setIsLoggedIn(false);
-      navigate('/');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+    toast.success('Product added to basket!');
   };
 
   const handleCategorySelect = (category) => setSelectedCategory(category);
@@ -154,8 +104,7 @@ const Shop = () => {
     if (filteredProducts.length > 0 && imagesLoaded === filteredProducts.length) {
       setShowLoadingScreen(false);
     }
-  }, [imagesLoaded, filteredProducts.length]);
-
+  }, [imagesLoaded, filteredProducts.length])
   return (
     <div className="shop">
       {showLoadingScreen && <LoadingScreen />}
@@ -177,14 +126,6 @@ const Shop = () => {
             <nav id="desktop-nav">
               <div>
                 <ul className="nav-links">
-                  {isLoggedIn ? (
-                    <>
-                      <li><Link to="/account">ACCOUNT</Link></li>
-                      <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
-                    </>
-                  ) : (
-                    <li><Link to="/login">LOGIN</Link></li>
-                  )}
                   <li><Link to="/shop">SHOP</Link></li>
                   <li><Link to="/about">OUR MESSAGE</Link></li>
                   <li><Link to="/sizeguide">SIZE GUIDE</Link></li>
@@ -234,19 +175,11 @@ const Shop = () => {
               </div>
               <div className={`menu-links-about ${menuOpen ? 'open' : ''}`}>
                 <ul>
-                {isLoggedIn ? (
-                  <>
-                    <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                    <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                  </>
-                ) : (
-                  <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-                )}
-                <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-                <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-                <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-                <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-                <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+                  <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+                  <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+                  <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+                  <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+                  <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
                 </ul>
               </div>
             </div>
@@ -279,7 +212,6 @@ const Shop = () => {
               product={selectedProduct}
               onClose={handleCloseModal}
               addToBasket={addToBasket}
-              isLoggedIn={isLoggedIn}
             />
           }
         </>

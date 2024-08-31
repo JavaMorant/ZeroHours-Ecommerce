@@ -54,6 +54,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
         selectedSize: selectedSize 
       };
       addToBasket(itemToAdd, selectedSize);
+      
 
       onClose(); 
     }

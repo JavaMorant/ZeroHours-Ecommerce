@@ -2,19 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen';
 import './App.css';
-import { isLoggedIn as checkLoggedIn } from './Auth';
-import httpClient from './httpClients.ts';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showCartDropdown, setShowCartDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if the app has been loaded before
     const hasLoaded = localStorage.getItem('hasLoaded');
 
     if (!hasLoaded) {
+      // Simulate a loading time (set to 0 ms, but you can increase if needed)
       const timer = setTimeout(() => {
         setIsLoading(false);
         localStorage.setItem('hasLoaded', 'true');
@@ -24,13 +23,6 @@ function App() {
     } else {
       setIsLoading(false);
     }
-
-    const checkLoginStatus = async () => {
-      const loggedIn = await checkLoggedIn();
-      setIsLoggedIn(loggedIn);
-    };
-
-    checkLoginStatus();
   }, []);
 
   // Utility function to toggle the hamburger menu
@@ -41,18 +33,11 @@ function App() {
     icon.classList.toggle("open");
   };
 
-  const handleLogout = async () => {
-    await httpClient.post('/logout'); // Ensure this endpoint logs the user out
-    setIsLoggedIn(false);
-    navigate('/');
-  };
-
   if (isLoading) {
     return <LoadingScreen />;
   }
 
   return (
-
     <div className="App">
       <video className="background-video" autoPlay loop muted>
         <source src={"./Assets/vids/0 HOURS-41"}  />
@@ -63,14 +48,6 @@ function App() {
       <nav id="desktop-nav">
         <div>
           <ul className="nav-links-app">
-            {isLoggedIn ? (
-              <>
-                <li><Link to="/account">ACCOUNT</Link></li>
-                <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
-              </>
-            ) : (
-              <li><Link to="/login">LOGIN</Link></li>
-            )}
             <li><Link to="/shop">SHOP</Link></li>
             <li><Link to="/about">OUR MESSAGE</Link></li>
             <li><Link to="/sizeguide">SIZE GUIDE</Link></li>
@@ -89,19 +66,11 @@ function App() {
             <span></span>
           </div>
           <div className="menu-links-app">
-          {isLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
-              <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
-              <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
-              <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
-              <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
-              <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
+            <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
+            <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
+            <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
+            <li><Link to="/shipping" onClick={toggleMenu}>Shipping</Link></li>
+            <li><Link to="/contact" onClick={toggleMenu}>Contact Us</Link></li>
           </div>
         </div>
       </nav>
@@ -128,6 +97,7 @@ function App() {
         {showCartDropdown && (
           <div className="cart-dropdown">
             {/* Add cart items or a mini-cart preview here */}
+            {/* This should be populated with data from client-side storage */}
           </div>
         )}
       </div>

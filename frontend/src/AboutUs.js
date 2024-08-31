@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './AboutUs.css';
-import { isLoggedIn } from './Auth'; // Function to check login status
 
 // Utility function to toggle the hamburger menu
 const toggleMenu = () => {
@@ -13,36 +12,6 @@ const toggleMenu = () => {
 
 const AboutUs = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false); // Fixed the state naming
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const loggedIn = await isLoggedIn();
-      setIsUserLoggedIn(loggedIn);
-    };
-    checkLoginStatus();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'include', // Include cookies if using session-based authentication
-      });
-
-      if (response.ok) {
-        // Clear any local auth state
-        setIsUserLoggedIn(false);
-        localStorage.removeItem('authToken'); // Clear token or auth state if stored locally
-        navigate('/'); // Navigate to the homepage after logout
-      } else {
-        console.error('Failed to logout');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index);
@@ -102,14 +71,6 @@ const AboutUs = () => {
       <nav id="desktop-nav">
         <div>
           <ul className="nav-links">
-            {isUserLoggedIn ? (
-              <>
-                <li><Link to="/account">ACCOUNT</Link></li>
-                <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
-              </>
-            ) : (
-              <li><Link to="/login">LOGIN</Link></li>
-            )}
             <li><Link to="/shop">SHOP</Link></li>
             <li><Link to="/about">OUR MESSAGE</Link></li>
             <li><Link to="/sizeguide">SIZE GUIDE</Link></li>
@@ -129,14 +90,6 @@ const AboutUs = () => {
           </div>
           <div className="menu-links-about">
             <ul>
-              {isUserLoggedIn ? (
-                <>
-                  <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                  <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                </>
-              ) : (
-                <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-              )}
               <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
               <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
               <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>

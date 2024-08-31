@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import httpClient from './httpClients.ts';
-import { isLoggedIn } from './Auth';
 import './Checkout.css';
+import { toast } from 'react-toastify';
 
 const stripePromise = loadStripe('pk_test_51PpWYO2Lpl1R0iboJQ53cfJkTYtZD5ed7IpAdHvVghxBQcvh2UjwtQE0AksqPTKKjLPMJ0GryqTZH3CVjSKAorKh00AMEf0Py3');
 
@@ -40,6 +39,8 @@ const CheckoutForm = ({ amount }) => {
     setError(event.error ? event.error.message : "");
   };
 
+
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setProcessing(true);
@@ -54,6 +55,10 @@ const CheckoutForm = ({ amount }) => {
       setProcessing(false);
       return;
     }
+    else {
+        toast.success('Payment successful! Your order is confirmed.');
+        // Clear the cart from local storage after successful payment
+    }
 
     // Here you would typically send the paymentMethod.id to your server
     // and create a PaymentIntent. For this example, we'll just simulate success.
@@ -61,7 +66,10 @@ const CheckoutForm = ({ amount }) => {
     setError(null);
     setSucceeded(true);
     setProcessing(false);
-    // Redirect or show success message
+    // Clear the cart from local storage after successful payment
+    localStorage.removeItem('basket');
+    
+    // Redirect to order confirmation page
     navigate('/order-confirmation');
   };
 
@@ -82,45 +90,22 @@ const CheckoutForm = ({ amount }) => {
 const Checkout = () => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const loggedIn = await isLoggedIn();
-      setIsUserLoggedIn(loggedIn);
-      if (!loggedIn) {
-        navigate('/login');
-      }
-    };
-    
-    const fetchCart = async () => {
-      if (isUserLoggedIn) {
-        try {
-          const response = await httpClient.get("/get-basket");
-          setCart(response.data.basket);
-        } catch (error) {
-          console.error("Error fetching cart:", error);
-        }
-      } else {
-        const savedCart = localStorage.getItem('basket');
-        if (savedCart) {
-          setCart(JSON.parse(savedCart));
-        }
-      }
-    };
-
-    checkLoginStatus().then(() => fetchCart());
-  }, [isUserLoggedIn, navigate]);
+    const savedCart = localStorage.getItem('basket');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    } else {
+      // If cart is empty, redirect to shop page
+      navigate('/shop');
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const newTotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
     setTotal(newTotal);
   }, [cart]);
-
-  if (!isUserLoggedIn) {
-    return null; // or a loading spinner
-  }
 
   return (
     <div className="checkout-page">

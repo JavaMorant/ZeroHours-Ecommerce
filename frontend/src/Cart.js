@@ -1,63 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext,  useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Cart.css';
 import './AboutUs.css';
-import httpClient from './httpClients.ts';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { isLoggedIn as checkLoggedIn } from './Auth';
+import { BasketContext } from './BasketContext';
 
 const Cart = () => {
-  const [basket, setBasket] = useState([]);
+  const { basket, setBasket } = useContext(BasketContext);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchBasket = async () => {
-      const loggedIn = await checkLoggedIn();
-      setIsLoggedIn(loggedIn);
-
-      if (loggedIn) {
-        try {
-          const response = await httpClient.get("/get-basket");
-          setBasket(response.data.basket);
-        } catch (error) {
-          console.error("Error fetching basket:", error);
-        }
-      } else {
-        const savedBasket = localStorage.getItem('basket');
-        if (savedBasket) {
-          setBasket(JSON.parse(savedBasket));
-        }
-      }
-    };
-
-    fetchBasket();
-  }, []);
-
-  const updateBasket = async (updatedBasket) => {
-    setBasket(updatedBasket);
-
-    if (isLoggedIn) {
-      try {
-        await httpClient.post("/update-basket", { basket: updatedBasket });
-      } catch (error) {
-        console.error("Error updating server basket:", error);
-      }
-    } else {
-      localStorage.setItem('basket', JSON.stringify(updatedBasket));
-    }
-  };
-
-  const handleCheckout = () => {
-    if (!isLoggedIn) {
-      toast.error('You must be logged in to checkout.');
-      navigate('/login');
-    } else {
-      navigate('/checkout');
-    }
-  };
 
   const handleQuantityChange = (productId, selectedSize, newQuantity) => {
     const updatedBasket = basket.map(item =>
@@ -65,14 +16,16 @@ const Cart = () => {
         ? { ...item, quantity: Math.max(1, newQuantity) }
         : item
     );
-    updateBasket(updatedBasket);
+    setBasket(updatedBasket);
+    toast.info('Quantity updated');
   };
 
   const handleRemoveItem = (productId, selectedSize) => {
     const updatedBasket = basket.filter(item => 
       !(item.id === productId && item.selectedSize === selectedSize)
     );
-    updateBasket(updatedBasket);
+    setBasket(updatedBasket);
+    toast.info('Item removed from basket');
   };
 
   const calculateTotal = () => {
@@ -83,25 +36,17 @@ const Cart = () => {
     setMenuOpen(!menuOpen);
   };
 
-  const handleLogout = async () => {
-    await httpClient.post('/logout');
-    setIsLoggedIn(false);
-    navigate('/');
+  const handleCheckout = () => {
+    navigate('/checkout');
   };
+
 
   return (
     <div>
+      {/* Desktop Navigation */}
       <nav id="desktop-nav">
         <div>
           <ul className="nav-links">
-            {isLoggedIn ? (
-              <>
-                <li><Link to="/account">ACCOUNT</Link></li>
-                <li><Link to="/" onClick={handleLogout}>LOGOUT</Link></li>
-              </>
-            ) : (
-              <li><Link to="/login">LOGIN</Link></li>
-            )}
             <li><Link to="/shop">SHOP</Link></li>
             <li><Link to="/about">OUR MESSAGE</Link></li>
             <li><Link to="/sizeguide">SIZE GUIDE</Link></li>
@@ -111,6 +56,7 @@ const Cart = () => {
         </div>
       </nav>
 
+      {/* Mobile Navigation */}
       <nav id="hamburger-nav-about">
         <div className="hamburger-menu-about">
           <div className="hamburger-icon-about" onClick={toggleMenu}>
@@ -121,14 +67,6 @@ const Cart = () => {
           {menuOpen && (
             <div className="menu-links-about">
               <ul>
-                {isLoggedIn ? (
-                  <>
-                    <li><Link to="/account" onClick={toggleMenu}>Account</Link></li>
-                    <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
-                  </>
-                ) : (
-                  <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>
-                )}
                 <li><Link to="/shop" onClick={toggleMenu}>Shop</Link></li>
                 <li><Link to="/about" onClick={toggleMenu}>Our Message</Link></li>
                 <li><Link to="/sizeguide" onClick={toggleMenu}>Size Guide</Link></li>
@@ -140,6 +78,7 @@ const Cart = () => {
         </div>
       </nav>
 
+      {/* Cart Icon */}
       <div id="cart-container-about">
         <img 
           src="./assets/img/icons8-cart-64.png" 
@@ -149,12 +88,14 @@ const Cart = () => {
         />
       </div>
       
+      {/* Logo */}
       <div id="logo-container-about">
         <Link to="/">
           <img src="./assets/img/logo_nobg.png" alt="Our Logo" className="logo" />
         </Link>
       </div>
       
+      {/* Social Media Icons */}
       <div id="socials-container-about">
         <img 
           src="./assets/img/icons8-instagram-24.png" 
@@ -182,6 +123,7 @@ const Cart = () => {
         />
       </div>
 
+      {/* Cart Contents */}
       <div className="cart-container">
         <h2>Your Basket</h2>
         {basket.length === 0 ? (
