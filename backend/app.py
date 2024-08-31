@@ -13,7 +13,8 @@ app.config.from_object(ApplicationConfig())
 CORS(app, resources={r"/*": {
     "origins": [
         "http://localhost:3000", 
-        "https://master--stunning-sopapillas-f808db.netlify.app"
+        "https://master--stunning-sopapillas-f808db.netlify.app",
+        "https://0hrs.co.uk"
     ],
     "allow_headers": ["Content-Type", "Authorization"],
     "methods": ["GET", "POST", "OPTIONS"]
