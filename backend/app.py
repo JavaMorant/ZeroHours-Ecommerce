@@ -126,7 +126,9 @@ def payment_success():
     
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
+    print("wid")
     try:
+        print("wod")
         data = request.json
         line_items = [{
             'price_data': {

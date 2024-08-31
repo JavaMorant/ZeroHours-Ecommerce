@@ -1,54 +1,94 @@
 .product-display {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .product {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 20px;
-  }
-  
-  .product img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-right: 20px;
-  }
-  
-  .description {
-    flex-grow: 1;
-  }
-  
-  .total {
-    text-align: right;
-    margin-top: 20px;
-    font-size: 1.2em;
-  }
-  
-  form {
-    text-align: right;
-    margin-top: 20px;
-  }
-  
-  button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
-  
-  .message {
-    text-align: center;
-    font-size: 1.2em;
-    margin-top: 50px;
-  }
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-display h2 {
+  text-align: center;
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.product img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 25px;
+}
+
+.description {
+  flex-grow: 1;
+  color: #555;
+}
+
+.description h3 {
+  font-size: 1.5em;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.description p {
+  margin: 5px 0;
+  font-size: 1em;
+  color: #777;
+}
+
+.description h5 {
+  margin-top: 15px;
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #333;
+}
+
+.total {
+  text-align: right;
+  margin-top: 30px;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #333;
+}
+
+button {
+  background-color: #ff7b54;
+  border: none;
+  color: white;
+  padding: 15px 40px;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 30px auto;
+  cursor: pointer;
+  border-radius: 8px;
+  display: block;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #ff5733;
+}
+
+.message {
+  text-align: center;
+  font-size: 1.5em;
+  color: #333;
+  margin-top: 50px;
+  padding: 20px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
