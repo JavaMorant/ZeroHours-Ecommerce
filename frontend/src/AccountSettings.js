@@ -10,6 +10,8 @@ const AccountSettings = () => {
     name: '',
     address: '',
   });
+  const apiUrl = process.env.REACT_APP_API_BASE_URL;
+
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [orderHistory, setOrderHistory] = useState([]);
@@ -30,7 +32,7 @@ const AccountSettings = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await httpClient.get('/api/user-info');
+      const response = await httpClient.get(`${apiUrl}/user-info`);
       setUserInfo(response.data);
     } catch (error) {
       console.error('Error fetching user info:', error);
@@ -39,7 +41,7 @@ const AccountSettings = () => {
 
   const fetchOrderHistory = async () => {
     try {
-      const response = await httpClient.get('/api/order-history');
+      const response = await httpClient.get(`${apiUrl}/order-history`);
       setOrderHistory(response.data);
     } catch (error) {
       console.error('Error fetching order history:', error);
@@ -61,7 +63,7 @@ const AccountSettings = () => {
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     try {
-      await httpClient.put('/api/update-profile', userInfo);
+      await httpClient.put(`${apiUrl}/update-profile`, userInfo);
       setMessage('Profile updated successfully');
     } catch (error) {
       setMessage('Error updating profile');
@@ -75,7 +77,7 @@ const AccountSettings = () => {
       return;
     }
     try {
-      await httpClient.put('/api/update-password', { password: newPassword });
+      await httpClient.put(`${apiUrl}update-password`, { password: newPassword });
       setMessage('Password updated successfully');
       setNewPassword('');
       setConfirmPassword('');

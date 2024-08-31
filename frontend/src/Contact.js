@@ -5,6 +5,8 @@ import "./Contact.css";
 import "./AboutUs.css";
 
 export default function Contact() {
+  const apiUrl = process.env.REACT_APP_API_BASE_URL;
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -30,7 +32,7 @@ export default function Contact() {
     setSubmitStatus('sending');
 
     try {
-      const response = await fetch('/api/send-contact-email', {
+      const response = await fetch(`${apiUrl}/send-contact-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

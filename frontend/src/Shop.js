@@ -26,10 +26,13 @@ const Shop = () => {
   const menuRef = useRef(null);
   const iconRef = useRef(null);
 
+
   useEffect(() => {
+    const apiUrl = process.env.REACT_APP_API_BASE_URL;
+
     const fetchData = async () => {
       try {
-        const productResponse = await httpClient.get('/products');
+        const productResponse = await httpClient.get(`${apiUrl}/products`);
         setProducts(productResponse.data);
         setFilteredProducts(productResponse.data);
       } catch (error) {

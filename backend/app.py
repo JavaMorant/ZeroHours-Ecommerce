@@ -9,7 +9,7 @@ import stripe
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig())
 
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000", "allow_headers": ["Content-Type", "Authorization"], "methods": ["GET", "POST", "OPTIONS"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000" "https://master--stunning-sopapillas-f808db.netlify.app/", "allow_headers": ["Content-Type", "Authorization"], "methods": ["GET", "POST", "OPTIONS"]}}, supports_credentials=True)
 stripe.api_key = 'sk_test_51PpWYO2Lpl1R0iboAGzFAsq0DOYkjPpk6tH85n84fLrYpCDYrA3gcWVTsyWjWj0uGGT71l4ShgH6LOk4RB2SJQ3j002hYGjCIl'
 
 # Initialize Flask-SQLAlchemy
