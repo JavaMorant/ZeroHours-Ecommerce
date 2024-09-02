@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen';
 import './App.css';
@@ -7,13 +7,14 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showCartDropdown, setShowCartDropdown] = useState(false);
   const navigate = useNavigate();
+  const videoRef = useRef(null);
 
   useEffect(() => {
     // Check if the app has been loaded before
     const hasLoaded = localStorage.getItem('hasLoaded');
 
     if (!hasLoaded) {
-      // Simulate a loading time (set to 0 ms, but you can increase if needed)
+      // Simulate a loading time
       const timer = setTimeout(() => {
         setIsLoading(false);
         localStorage.setItem('hasLoaded', 'true');
@@ -25,7 +26,14 @@ function App() {
     }
   }, []);
 
-  // Utility function to toggle the hamburger menu
+  useEffect(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (videoRef.current && !isIOS) {
+      videoRef.current.play();
+    }
+  }, []);
+
   const toggleMenu = () => {
     const menu = document.querySelector(".menu-links-app");
     const icon = document.querySelector(".hamburger-icon");
@@ -39,8 +47,15 @@ function App() {
 
   return (
     <div className="App">
-      <video className="background-video" autoplay muted loop>
-        <source src={"./Assets/vids/TrailerLarge.mp4"}  />
+      <video
+        ref={videoRef}
+        className="background-video"
+        autoPlay
+        muted
+        loop
+        playsInline={/iPad|iPhone|iPod/.test(navigator.userAgent)}
+      >
+        <source src="/Assets/vids/TrailerLarge.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
@@ -58,7 +73,7 @@ function App() {
       </nav>
 
       {/* Mobile Navigation */}
-      <nav id='hamburger-nav'>
+      <nav id="hamburger-nav">
         <div className="hamburger-menu">
           <div className="hamburger-icon" onClick={toggleMenu}>
             <span></span>
@@ -76,7 +91,7 @@ function App() {
       </nav>
 
       {/* Shop Link */}
-      <div id='shop-container'>
+      <div id="shop-container">
         <h1>
           <Link to="/shop">
             <i>SHOP</i>
@@ -85,19 +100,18 @@ function App() {
       </div>
 
       {/* Cart Icon with Dropdown */}
-      <div id='cart-container'>
-        <img 
-          src="./assets/img/icons8-cart-64.png" 
-          alt="Cart" 
-          className="icon" 
-          onClick={() => navigate('/cart')}   
-          onMouseEnter={() => setShowCartDropdown(true)} 
+      <div id="cart-container">
+        <img
+          src="./assets/img/icons8-cart-64.png"
+          alt="Cart"
+          className="icon"
+          onClick={() => navigate('/cart')}
+          onMouseEnter={() => setShowCartDropdown(true)}
           onMouseLeave={() => setShowCartDropdown(false)}
         />
         {showCartDropdown && (
           <div className="cart-dropdown">
             {/* Add cart items or a mini-cart preview here */}
-            {/* This should be populated with data from client-side storage */}
           </div>
         )}
       </div>
@@ -105,16 +119,16 @@ function App() {
       {/* Logo */}
       <div id="logo-container">
         <Link to="/">
-          <img src='./assets/img/logo_nobg.png' alt="Logo" className="logo"/>
+          <img src="./assets/img/logo_nobg.png" alt="Logo" className="logo" />
         </Link>
       </div>
 
       {/* Social Media Icons */}
       <div id="socials-container">
-        <img src="./assets/img/icons8-instagram-24.png" alt="Instagram" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')}/>
-        <img src="./assets/img/icons8-tiktok-24.png" alt="TikTok" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')}/>
-        <img src="./assets/img/icons8-facebook-24.png" alt="Facebook" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')}/>
-        <img src="./assets/img/icons8-X-50.png" alt="X" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')}/>
+        <img src="./assets/img/icons8-instagram-24.png" alt="Instagram" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
+        <img src="./assets/img/icons8-tiktok-24.png" alt="TikTok" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
+        <img src="./assets/img/icons8-facebook-24.png" alt="Facebook" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
+        <img src="./assets/img/icons8-X-50.png" alt="X" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
       </div>
     </div>
   );

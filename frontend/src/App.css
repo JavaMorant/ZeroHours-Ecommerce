@@ -237,15 +237,9 @@ nav {
   #desktop-nav {
     display: none;
   }
-
   .background-video {
     position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
     object-fit: cover;  /* Ensures the video covers the entire background without stretching */
-    z-index: -1;  /* Keeps the video behind other content */
     overflow: hidden;  /* Prevents scrolling */
   }
   #desktop-nav .nav-links-app {
