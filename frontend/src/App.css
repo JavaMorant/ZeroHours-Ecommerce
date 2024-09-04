@@ -241,6 +241,9 @@ nav {
     position: fixed;
     object-fit: cover;  /* Ensures the video covers the entire background without stretching */
     overflow: hidden;  /* Prevents scrolling */
+    object-position: center; /* Keep the video centered */
+    min-width: 100%;
+    min-height: 100%;
   }
   #desktop-nav .nav-links-app {
     display: none;
