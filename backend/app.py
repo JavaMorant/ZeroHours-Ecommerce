@@ -154,9 +154,7 @@ def payment_success():
     
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
-    print("wid")
     try:
-        print("wod")
         data = request.json
         line_items = [{
             'price_data': {
@@ -176,7 +174,8 @@ def create_checkout_session():
             cancel_url= DOMAIN_NAME + '/checkout?canceled=true',
             automatic_tax={'enabled': True},
             billing_address_collection='required',
-            shipping_address_collection={'allowed_countries': ['GB']}
+            shipping_address_collection={'allowed_countries': ['GB']},
+            customer_email=data.get('email')  # Add this line to set the customer's email
         )
     except Exception as e:
         return jsonify(error=str(e)), 400
@@ -196,7 +195,7 @@ def send_contact_email():
     try:
         # Compose email
         msg = Message("New Contact Form Submission",
-                      recipients=[os.environ.get('ORGANIZATION_EMAIL')])
+                      recipients=["awanded75@gmail.com"])
         msg.body = f"""
         New contact form submission:
         
@@ -212,7 +211,7 @@ def send_contact_email():
     except Exception as e:
         print(f"Error sending email: {str(e)}")
         return jsonify({'error': 'Failed to send message. Please try again.'}), 500
-    
+
 def send_order_confirmation_email(order, session):
     try:
         msg = Message("Order Confirmation",
@@ -248,7 +247,6 @@ def send_order_confirmation_email(order, session):
         print(f"Order confirmation email sent for order {order.id}")
     except Exception as e:
         print(f"Error sending order confirmation email: {str(e)}")
-
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -321,6 +319,10 @@ def webhook():
 
             db.session.commit()
             print(f"Order created successfully: {new_order.id}")
+
+            # Send order confirmation email
+            send_order_confirmation_email(new_order, session_with_items)
+
         except Exception as e:
             db.session.rollback()
             print(f"Error processing order: {str(e)}")
@@ -330,4 +332,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
