@@ -5,9 +5,18 @@ from flask_cors import CORS
 import os
 from flask_migrate import Migrate
 import stripe
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig())
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = "awanded75@gmail.com"
+app.config['MAIL_PASSWORD'] = "AwandePalace50Park"
+app.config['MAIL_DEFAULT_SENDER'] = "awanded75@gmail.com"
+
+mail = Mail(app)
 
 # Configure CORS
 CORS(app, resources={r"/*": {
@@ -166,58 +175,122 @@ def create_checkout_session():
             success_url= DOMAIN_NAME + '/checkout?success=true',
             cancel_url= DOMAIN_NAME + '/checkout?canceled=true',
             automatic_tax={'enabled': True},
+            billing_address_collection='required',
+            shipping_address_collection={'allowed_countries': ['GB']}
         )
     except Exception as e:
         return jsonify(error=str(e)), 400
     
     return jsonify(id=checkout_session.id)
 
+@app.route('/send-contact-email', methods=['POST'])
+def send_contact_email():
+    data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    message = data.get('message')
+
+    if not all([name, email, message]):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    try:
+        # Compose email
+        msg = Message("New Contact Form Submission",
+                      recipients=[os.environ.get('ORGANIZATION_EMAIL')])
+        msg.body = f"""
+        New contact form submission:
+        
+        Name: {name}
+        Email: {email}
+        Message: {message}
+        """
+
+        # Send email
+        mail.send(msg)
+
+        return jsonify({'message': 'Message sent successfully!'}), 200
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+        return jsonify({'error': 'Failed to send message. Please try again.'}), 500
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    event = None
     payload = request.data
-    sig_header = request.headers['STRIPE_SIGNATURE']
+    sig_header = request.headers.get('Stripe-Signature')
 
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, 'your_webhook_secret'
+            payload, sig_header, 'whsec_7e112aba4e1d13c8eacb596b11963b6cf307435a1ae1238759d2c12515213056'
         )
     except ValueError as e:
-        # Invalid payload
-        return 'Invalid payload', 400
+        return jsonify({'error': 'Invalid payload'}), 400
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        return 'Invalid signature', 400
+        return jsonify({'error': 'Invalid signature'}), 400
 
-    # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        
-        # Create a new order
-        new_order = Order(
-            total_amount=session.amount_total / 100,  # Convert cents to dollars
-            status='paid',
-            customer_email=session.customer_details.email
+
+        session_with_items = stripe.checkout.Session.retrieve(
+            session.id,
+            expand=['line_items']
         )
-        db.session.add(new_order)
-        
-        # Add order items (you'll need to modify this based on your needs)
-        for item in session.line_items.data:
-            order_item = OrderItem(
-                order_id=new_order.id,
-                product_id=item.price.product,  # You might need to adjust this
-                quantity=item.quantity,
-                price=item.amount_total / 100,  # Convert cents to dollars
-                size='N/A'  # You'll need to figure out how to handle size
+
+        try:
+            new_order = Order(
+                total_amount=session.amount_total / 100,
+                status='paid',
+                customer_email=session.customer_details.email
             )
-            db.session.add(order_item)
-        
-        db.session.commit()
+            db.session.add(new_order)
+            db.session.flush()
 
-    return 'Success', 200
+            for item in session_with_items.line_items.data:
+                product = stripe.Product.retrieve(item.price.product)
+                size = product.metadata.get('size', 'N/A')
+
+                # Retrieve the corresponding product from our database
+                db_product = Products.query.filter_by(stripe_product_id=item.price.product).first()
+                
+                if db_product:
+                    # Update inventory based on size
+                    if size == 'S':
+                        db_product.scount -= item.quantity
+                    elif size == 'M':
+                        db_product.mcount -= item.quantity
+                    elif size == 'L':
+                        db_product.lcount -= item.quantity
+                    elif size == 'XL':
+                        db_product.xlcount -= item.quantity
+                    elif size == 'XXL':
+                        db_product.xxlcount -= item.quantity
+                    elif db_product.type == 'sock':
+                        db_product.scount -= item.quantity  # Assuming scount is used for socks
+                    
+                    # Ensure counts don't go below zero
+                    db_product.scount = max(db_product.scount, 0)
+                    db_product.mcount = max(db_product.mcount, 0)
+                    db_product.lcount = max(db_product.lcount, 0)
+                    db_product.xlcount = max(db_product.xlcount, 0)
+                    db_product.xxlcount = max(db_product.xxlcount, 0)
+
+                order_item = OrderItem(
+                    order_id=new_order.id,
+                    product_id=db_product.id if db_product else None,
+                    quantity=item.quantity,
+                    price=item.amount_total / 100,
+                    size=size
+                )
+                db.session.add(order_item)
+
+            db.session.commit()
+            print(f"Order created successfully: {new_order.id}")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error processing order: {str(e)}")
+            return jsonify({'error': 'Error processing order'}), 500
+
+    return jsonify({'success': True}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
 
-if __name__ == '__main__':
-    app.run(debug=True)
