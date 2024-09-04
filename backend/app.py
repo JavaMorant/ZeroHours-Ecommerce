@@ -212,6 +212,43 @@ def send_contact_email():
     except Exception as e:
         print(f"Error sending email: {str(e)}")
         return jsonify({'error': 'Failed to send message. Please try again.'}), 500
+    
+def send_order_confirmation_email(order, session):
+    try:
+        msg = Message("Order Confirmation",
+                      recipients=[session.customer_details.email])
+        
+        # Construct email body
+        email_body = f"""
+        Thank you for your order!
+
+        Order Details:
+        Order ID: {order.id}
+        Total Amount: £{order.total_amount:.2f}
+
+        Items:
+        """
+
+        for item in session.line_items.data:
+            email_body += f"- {item.description}: £{item.amount_total / 100:.2f}\n"
+
+        email_body += f"""
+        Shipping Address:
+        {session.shipping_details.name}
+        {session.shipping_details.address.line1}
+        {session.shipping_details.address.city}
+        {session.shipping_details.address.postal_code}
+        {session.shipping_details.address.country}
+
+        Thank you for shopping with us!
+        """
+
+        msg.body = email_body
+        mail.send(msg)
+        print(f"Order confirmation email sent for order {order.id}")
+    except Exception as e:
+        print(f"Error sending order confirmation email: {str(e)}")
+
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
