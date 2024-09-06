@@ -1,4 +1,4 @@
-import React, { useContext,  useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Cart.css';
 import './AboutUs.css';
@@ -10,10 +10,23 @@ const Cart = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+  const calculatePrice = (productId, quantity) => {
+    if (productId === 2) {
+      switch (quantity) {
+        case 1: return 9.99;
+        case 2: return 17.99;
+        case 3: return 23.99;
+        case 4: return 31.99;
+        default: return 31.99 + (quantity - 4) * 7.99; // For quantities > 4
+      }
+    }
+    return 9.99 * quantity; // Default pricing for other products
+  };
+
   const handleQuantityChange = (productId, selectedSize, newQuantity) => {
     const updatedBasket = basket.map(item =>
       item.id === productId && item.selectedSize === selectedSize
-        ? { ...item, quantity: Math.max(1, newQuantity) }
+        ? { ...item, quantity: Math.max(1, newQuantity), price: calculatePrice(productId, Math.max(1, newQuantity)) }
         : item
     );
     setBasket(updatedBasket);
@@ -29,7 +42,7 @@ const Cart = () => {
   };
 
   const calculateTotal = () => {
-    return basket.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+    return basket.reduce((total, item) => total + item.price, 0).toFixed(2);
   };
 
   const toggleMenu = () => {
@@ -39,7 +52,6 @@ const Cart = () => {
   const handleCheckout = () => {
     navigate('/checkout');
   };
-
 
   return (
     <div>
@@ -146,7 +158,7 @@ const Cart = () => {
                         value={item.quantity}
                         onChange={(e) => handleQuantityChange(item.id, item.selectedSize, parseInt(e.target.value))}
                       />
-                      <p>Price: £{(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}</p>
+                      <p>Price: £{item.price.toFixed(2)}</p>
                     </div>
                     <div className="remove-button">
                       <button onClick={() => handleRemoveItem(item.id, item.selectedSize)}>Remove</button>

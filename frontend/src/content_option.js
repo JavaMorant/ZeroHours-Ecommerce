@@ -62,7 +62,7 @@ const services = [
 
 const contactConfig = {
   YOUR_EMAIL: 'zerohourbrand@outlook.com',
-  YOUR_FONE: '(555)123-4567',
+  // YOUR_FONE: '(555)123-4567',
   description:
     'Please contact us with any concers, questions or queries :)',
   YOUR_SERVICE_ID: 'service_id',
