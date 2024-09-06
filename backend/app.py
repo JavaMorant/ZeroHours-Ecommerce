@@ -39,7 +39,7 @@ with app.app_context():
 # Initialize Flask-Migrate
 migrate = Migrate(app, db)
 
-DOMAIN_NAME = "http://localhost:3000"
+DOMAIN_NAME = "https://0hrs.co.uk"
 
 # Handle preflight OPTIONS requests
 @app.route('/products', methods=['OPTIONS'])
