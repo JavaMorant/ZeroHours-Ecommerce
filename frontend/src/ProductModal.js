@@ -3,6 +3,7 @@ import './ProductModal.css';
 
 const ProductModal = ({ product, onClose, addToBasket }) => {
   const [selectedSize, setSelectedSize] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openDropdown, setOpenDropdown] = useState(null);
   
@@ -19,16 +20,14 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
 
   if (!product) return null;
 
-  const images = [product.photo, ...(Array.isArray(product.hover_images) ? product.hover_images.map(img => img) : [])];
+  const images = [product.photo, ...(Array.isArray(product.hover_images) ? product.hover_images : [])];
 
   const nextImage = () => {
     setCurrentImageIndex((currentImageIndex + 1) % images.length);
   };
 
   const prevImage = () => {
-    setCurrentImageIndex(
-      (currentImageIndex - 1 + images.length) % images.length
-    );
+    setCurrentImageIndex((currentImageIndex - 1 + images.length) % images.length);
   };
 
   const handleOverlayClick = (event) => {
@@ -49,21 +48,12 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
 
   const handleAddToCart = () => {
     if (selectedSize) {
-      const itemToAdd = {
-        ...product,
-        selectedSize: selectedSize 
-      };
-      addToBasket(itemToAdd, selectedSize);
-      
-
-      onClose(); 
+      addToBasket(product, selectedSize, quantity);
+      onClose();
     }
   };
 
-  // Define the order you want the sizes to appear
-  const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL', 'One Size']; 
-
-  // Sort sizes according to the predefined order
+  const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL', 'One Size'];
   const sortedSizes = sizeOrder
     .filter(size => product.sizes[size] !== undefined)
     .map(size => ({ size, count: product.sizes[size] }));
@@ -75,11 +65,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
         
         <div className="modal-body">
           <div className="image-carousel">
-            <img 
-              src={images[currentImageIndex]} 
-              alt={product.name} 
-              className="modal-image" 
-            />
+            <img src={images[currentImageIndex]} alt={product.name} className="modal-image" />
             {images.length > 1 && (
               <>
                 <button className="carousel-button prev" onClick={prevImage}>&lt;</button>
@@ -88,10 +74,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
             )}
             <div className="dot-indicators">
               {images.map((_, index) => (
-                <span
-                  key={index}
-                  className={`dot ${index === currentImageIndex ? 'active' : ''}`}
-                ></span>
+                <span key={index} className={`dot ${index === currentImageIndex ? 'active' : ''}`}></span>
               ))}
             </div>
           </div>
@@ -127,6 +110,17 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
               ))}
             </div>
             
+            <div className="quantity-selector">
+              <label htmlFor="quantity">Quantity:</label>
+              <input
+                id="quantity"
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value)))}
+              />
+            </div>
+
             <button 
               className="add-to-cart-button" 
               disabled={!selectedSize}

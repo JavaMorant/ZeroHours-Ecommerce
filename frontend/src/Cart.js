@@ -10,25 +10,15 @@ const Cart = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const calculatePrice = (productId, quantity) => {
-    if (productId === 2) {
-      switch (quantity) {
-        case 1: return 9.99;
-        case 2: return 17.99;
-        case 3: return 23.99;
-        case 4: return 31.99;
-        default: return 31.99 + (quantity - 4) * 7.99; // For quantities > 4
-      }
-    }
-    return 9.99 * quantity; // Default pricing for other products
-  };
+  
 
   const handleQuantityChange = (productId, selectedSize, newQuantity) => {
     const updatedBasket = basket.map(item =>
       item.id === productId && item.selectedSize === selectedSize
-        ? { ...item, quantity: Math.max(1, newQuantity), price: calculatePrice(productId, Math.max(1, newQuantity)) }
+        ? { ...item, quantity: Math.max(1, newQuantity) }
         : item
     );
+    console.log('Updating basket:', updatedBasket);
     setBasket(updatedBasket);
     toast.info('Quantity updated');
   };
@@ -42,7 +32,9 @@ const Cart = () => {
   };
 
   const calculateTotal = () => {
-    return basket.reduce((total, item) => total + item.price, 0).toFixed(2);
+
+    console.log('Current basket:', basket);
+    return basket.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
 
   const toggleMenu = () => {
@@ -113,25 +105,13 @@ const Cart = () => {
           src="./assets/img/icons8-instagram-24.png" 
           alt="Our Instagram" 
           className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
+          onClick={() => window.open('https://www.instagram.com/hourszer0/', '_blank')} 
         />
         <img 
           src="./assets/img/icons8-tiktok-24.png" 
           alt="Our TikTok" 
           className="icon" 
-          onClick={() => window.location.href='https://www.tiktok.com/@hourszero'} 
-        />
-        <img 
-          src="./assets/img/icons8-facebook-24.png" 
-          alt="Our Facebook" 
-          className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
-        />
-        <img 
-          src="./assets/img/icons8-X-50.png" 
-          alt="Our X" 
-          className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
+          onClick={() => window.open('https://www.tiktok.com/@hourszero', '_blank')} 
         />
       </div>
 
@@ -158,7 +138,8 @@ const Cart = () => {
                         value={item.quantity}
                         onChange={(e) => handleQuantityChange(item.id, item.selectedSize, parseInt(e.target.value))}
                       />
-                      <p>Price: £{item.price.toFixed(2)}</p>
+                      <p>Price per item: £{parseFloat(item.price).toFixed(2)}</p>
+                      <p>Total for this item: £{(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}</p>
                     </div>
                     <div className="remove-button">
                       <button onClick={() => handleRemoveItem(item.id, item.selectedSize)}>Remove</button>

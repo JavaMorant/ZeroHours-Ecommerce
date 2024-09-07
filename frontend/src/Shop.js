@@ -26,7 +26,6 @@ const Shop = () => {
   const menuRef = useRef(null);
   const iconRef = useRef(null);
 
-
   useEffect(() => {
     const apiUrl = "https://zerohours-fbbf2fc61221.herokuapp.com";
     console.log('API URL:', apiUrl);
@@ -36,6 +35,7 @@ const Shop = () => {
         const productResponse = await httpClient.get(`${apiUrl}/products`);
         setProducts(productResponse.data);
         setFilteredProducts(productResponse.data);
+        console.log('Fetched products:', productResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
         setError(error);
@@ -68,22 +68,50 @@ const Shop = () => {
     setImagesLoaded(prev => prev + 1);
   };
 
-  const addToBasket = (product, selectedSize) => {
+  // const addToBasket = (product, selectedSize, quantity) => {
+  //   const existingProductIndex = basket.findIndex(
+  //     item => item.id === product.id && item.selectedSize === selectedSize
+  //   );
+  //   let updatedBasket;
+
+  //   if (existingProductIndex >= 0) {
+  //     updatedBasket = [...basket];
+  //     updatedBasket[existingProductIndex].quantity += quantity;
+  //   } else {
+  //     updatedBasket = [
+  //       ...basket,
+  //       { ...product, quantity, selectedSize }
+  //     ];
+  //   }
+
+  //   setBasket(updatedBasket);
+  //   toast.success('Product added to basket!');
+  //   console.log('Adding to basket:', product, selectedSize, quantity);
+  // };
+
+  const addToBasket = (product, selectedSize, quantity) => {
     const existingProductIndex = basket.findIndex(
       item => item.id === product.id && item.selectedSize === selectedSize
     );
     let updatedBasket;
-
+  
     if (existingProductIndex >= 0) {
       updatedBasket = [...basket];
-      updatedBasket[existingProductIndex].quantity += 1;
+      updatedBasket[existingProductIndex].quantity += quantity;
     } else {
       updatedBasket = [
         ...basket,
-        { ...product, quantity: 1, selectedSize }
+        { 
+          ...product, 
+          quantity, 
+          selectedSize,
+          price: product.price, // Ensure we're using the original price
+          unitPrice: product.price // Keep the unit price for reference
+        }
       ];
     }
-
+  
+    console.log('Updating basket:', updatedBasket);
     setBasket(updatedBasket);
     toast.success('Product added to basket!');
   };
@@ -108,7 +136,8 @@ const Shop = () => {
     if (filteredProducts.length > 0 && imagesLoaded === filteredProducts.length) {
       setShowLoadingScreen(false);
     }
-  }, [imagesLoaded, filteredProducts.length])
+  }, [imagesLoaded, filteredProducts.length]);
+
   return (
     <div className="shop">
       {showLoadingScreen && <LoadingScreen />}
