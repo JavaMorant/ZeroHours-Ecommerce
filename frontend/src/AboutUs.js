@@ -23,7 +23,7 @@ const AboutUs = () => {
         <div className="text-section">
           <h1>ABOUT US</h1>
           <p>
-            At Z Sportswear, we build our brand from the ground up with a singular focus: helping you elevate your fitness and fashion game. Our mission is to empower individuals by providing high-quality sportswear designed to support every step of your fitness journey. From our cutting-edge materials to our stylish designs, we are dedicated to helping you progress both physically and fashionably. Join us as we redefine what it means to be at the forefront of fitness and fashion.
+            At ZH Sportswear, we build our brand from the ground up with a singular focus: helping you elevate your fitness and fashion game. Our mission is to empower individuals by providing high-quality sportswear designed to support every step of your fitness journey. From our cutting-edge materials to our stylish designs, we are dedicated to helping you progress both physically and fashionably. Join us as we redefine what it means to be at the forefront of fitness and fashion.
           </p>
         </div>
         <div className="dropdown" onClick={() => toggleDropdown(1)}>

@@ -33,9 +33,14 @@ const Cart = () => {
     toast.info('Item removed from basket');
   };
 
-  const calculateTotal = () => {
-    return basket.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  const formatPrice = (price) => {
+    return typeof price === 'number' ? price.toFixed(2) : '0.00';
   };
+
+  const calculateItemTotal = (item) => formatPrice(item.price * item.quantity);
+  const calculateItemSavings = (item) => formatPrice((item.unitPrice - item.price) * item.quantity);
+  const calculateTotal = () => formatPrice(basket.reduce((total, item) => total + (item.price * item.quantity), 0));
+  const calculateTotalSavings = () => formatPrice(basket.reduce((total, item) => total + ((item.unitPrice - item.price) * item.quantity), 0));
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -44,7 +49,6 @@ const Cart = () => {
   const handleCheckout = () => {
     navigate('/checkout');
   };
-
   return (
     <div className="cart-page">
       {/* Desktop Navigation */}
@@ -88,7 +92,7 @@ const Cart = () => {
           src="./assets/img/icons8-cart-64.png" 
           alt="Cart" 
           className="icon" 
-          onClick={() => window.location.href='/cart'} 
+          onClick={() => navigate('/cart')}
         />
       </div>
       
@@ -105,13 +109,13 @@ const Cart = () => {
           src="./assets/img/icons8-instagram-24.png" 
           alt="Our Instagram" 
           className="icon" 
-          onClick={() => window.open('https://www.instagram.com/hourszer0/', '_blank')} 
+          onClick={() => window.open('https://www.instagram.com/hourszer0/', '_blank')}
         />
         <img 
           src="./assets/img/icons8-tiktok-24.png" 
           alt="Our TikTok" 
           className="icon" 
-          onClick={() => window.open('https://www.tiktok.com/@hourszero', '_blank')} 
+          onClick={() => window.open('https://www.tiktok.com/@hourszero', '_blank')}
         />
       </div>
 
@@ -123,35 +127,45 @@ const Cart = () => {
         ) : (
           <>
             <ul className="basket-items">
-              {basket.map((item, index) => (
-                <li key={index} className="basket-item">
-                  <img src={item.photo} alt={item.name} className="basket-item-image" />
-                  <div className="basket-item-details">
-                    <h3>{item.name}</h3>
-                    <p>Size: {item.selectedSize}</p>
-                    <div className="quantity-controls">
-                      <label htmlFor={`quantity-${index}`}>Quantity:</label>
-                      <input
-                        id={`quantity-${index}`}
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) => handleQuantityChange(item.id, item.selectedSize, parseInt(e.target.value))}
-                      />
-                      {/* <p>Price per item: £{parseFloat(item.price).toFixed(2)}</p> */}
-                      <p>Total for this item: £{(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}</p>
-                      {item.price < item.unitPrice && (
-                        <p className="discount-info">Discount applied!</p>
-                      )}
-                    </div>
-                    <div className="remove-button">
-                      <button onClick={() => handleRemoveItem(item.id, item.selectedSize)}>Remove</button>
-                    </div>
-                  </div>
-                </li>
-              ))}
+            {basket.map((item, index) => (
+  <li key={index} className="basket-item">
+    <img src={item.photo} alt={item.name} className="basket-item-image" />
+    <div className="basket-item-details">
+      <h3>{item.name}</h3>
+      <p>Size: {item.selectedSize}</p>
+      <div className="quantity-controls">
+        <label htmlFor={`quantity-${index}`}>Quantity:</label>
+        <input
+          id={`quantity-${index}`}
+          type="number"
+          min="1"
+          value={item.quantity}
+          onChange={(e) => handleQuantityChange(item.id, item.selectedSize, parseInt(e.target.value))}
+        />
+      </div>
+      <div className="price-details">
+        {item.unitPrice !== item.price ? (
+          <>
+            <p>Original price: <span className="original-price">£{formatPrice(item.unitPrice)}</span></p>
+            <p>Discounted price: <strong>£{formatPrice(item.price)}</strong></p>
+          </>
+        ) : (
+          <p>Price: <strong>£{formatPrice(item.price)}</strong></p>
+        )}
+        <p>Total for this item: <strong>£{calculateItemTotal(item)}</strong></p>
+        {item.unitPrice > item.price && (
+          <p className="savings">You save: £{calculateItemSavings(item)}</p>
+        )}
+      </div>
+      <button onClick={() => handleRemoveItem(item.id, item.selectedSize)} className="remove-button">Remove</button>
+    </div>
+  </li>
+))}
             </ul>
-            <div className="cart-total">
+            <div className="cart-summary">
+              <h3>Order Summary</h3>
+              <p>Subtotal: £{calculateTotal()}</p>
+              <p className="total-savings">Total Savings: £{calculateTotalSavings()}</p>
               <h3>Total: £{calculateTotal()}</h3>
               <button onClick={handleCheckout} className="checkout-button">Proceed to Checkout</button>
             </div>
@@ -163,3 +177,4 @@ const Cart = () => {
 };
 
 export default Cart;
+

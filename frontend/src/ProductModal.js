@@ -93,7 +93,8 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
             <div className={`dropdown-modal ${openDropdown === 'shipping' ? 'open' : ''}`}>
               <div className="dropdown-header-modal" onClick={() => toggleDropdown('shipping')}>Returns & Shipping</div>
               <div className="dropdown-content-modal">
-                <p>Details about returns and shipping policies...</p>
+                <p>For returns, please email For returns email Zerohourbrand@outlook.com.</p>
+                <p>For shipping information, please press <a href='/shipping'>here</a></p>
               </div>
             </div>
 
