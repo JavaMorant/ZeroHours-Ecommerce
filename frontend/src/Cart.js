@@ -4,21 +4,23 @@ import './Cart.css';
 import './AboutUs.css';
 import { toast } from 'react-toastify';
 import { BasketContext } from './BasketContext';
+import { getDiscountedPrice } from './discounts';
 
 const Cart = () => {
   const { basket, setBasket } = useContext(BasketContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  
-
   const handleQuantityChange = (productId, selectedSize, newQuantity) => {
-    const updatedBasket = basket.map(item =>
-      item.id === productId && item.selectedSize === selectedSize
-        ? { ...item, quantity: Math.max(1, newQuantity) }
-        : item
-    );
-    console.log('Updating basket:', updatedBasket);
+    const updatedBasket = basket.map(item => {
+      if (item.id === productId && item.selectedSize === selectedSize) {
+        const updatedQuantity = Math.max(1, newQuantity);
+        const discountedPrice = getDiscountedPrice(item.type, updatedQuantity, item.unitPrice);
+        return { ...item, quantity: updatedQuantity, price: discountedPrice };
+      }
+      return item;
+    });
+
     setBasket(updatedBasket);
     toast.info('Quantity updated');
   };
@@ -32,8 +34,6 @@ const Cart = () => {
   };
 
   const calculateTotal = () => {
-
-    console.log('Current basket:', basket);
     return basket.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
 
@@ -46,7 +46,7 @@ const Cart = () => {
   };
 
   return (
-    <div>
+    <div className="cart-page">
       {/* Desktop Navigation */}
       <nav id="desktop-nav">
         <div>
@@ -138,8 +138,11 @@ const Cart = () => {
                         value={item.quantity}
                         onChange={(e) => handleQuantityChange(item.id, item.selectedSize, parseInt(e.target.value))}
                       />
-                      <p>Price per item: £{parseFloat(item.price).toFixed(2)}</p>
+                      {/* <p>Price per item: £{parseFloat(item.price).toFixed(2)}</p> */}
                       <p>Total for this item: £{(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}</p>
+                      {item.price < item.unitPrice && (
+                        <p className="discount-info">Discount applied!</p>
+                      )}
                     </div>
                     <div className="remove-button">
                       <button onClick={() => handleRemoveItem(item.id, item.selectedSize)}>Remove</button>
@@ -150,7 +153,7 @@ const Cart = () => {
             </ul>
             <div className="cart-total">
               <h3>Total: £{calculateTotal()}</h3>
-              <button onClick={handleCheckout}>Proceed to Checkout</button>
+              <button onClick={handleCheckout} className="checkout-button">Proceed to Checkout</button>
             </div>
           </>
         )}

@@ -7,6 +7,8 @@ import httpClient from './httpClients.ts';
 import LoadingScreen from './LoadingScreen';
 import { BasketContext } from './BasketContext';
 import { toast } from 'react-toastify';
+import { getDiscountedPrice } from './discounts';
+
 
 const Shop = () => {
   const navigate = useNavigate();
@@ -98,15 +100,18 @@ const Shop = () => {
     if (existingProductIndex >= 0) {
       updatedBasket = [...basket];
       updatedBasket[existingProductIndex].quantity += quantity;
+      const newQuantity = updatedBasket[existingProductIndex].quantity;
+      updatedBasket[existingProductIndex].price = getDiscountedPrice(product.type, newQuantity, product.price);
     } else {
+      const discountedPrice = getDiscountedPrice(product.type, quantity, product.price);
       updatedBasket = [
         ...basket,
         { 
           ...product, 
           quantity, 
           selectedSize,
-          price: product.price, // Ensure we're using the original price
-          unitPrice: product.price // Keep the unit price for reference
+          unitPrice: product.price,
+          price: discountedPrice
         }
       ];
     }
