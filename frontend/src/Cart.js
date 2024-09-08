@@ -40,7 +40,12 @@ const Cart = () => {
   const calculateItemTotal = (item) => formatPrice(item.price * item.quantity);
   const calculateItemSavings = (item) => formatPrice((item.unitPrice - item.price) * item.quantity);
   const calculateTotal = () => formatPrice(basket.reduce((total, item) => total + (item.price * item.quantity), 0));
-  const calculateTotalSavings = () => formatPrice(basket.reduce((total, item) => total + ((item.unitPrice - item.price) * item.quantity), 0));
+  const calculateTotalSavings = () => formatPrice(basket.reduce((total, item) => {
+    if (item.quantity > 2) {
+      return total + ((item.unitPrice - item.price) * item.quantity);
+    }
+    return total;
+  }, 0));
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -49,6 +54,8 @@ const Cart = () => {
   const handleCheckout = () => {
     navigate('/checkout');
   };
+
+
   return (
     <div className="cart-page">
       {/* Desktop Navigation */}
@@ -127,40 +134,41 @@ const Cart = () => {
         ) : (
           <>
             <ul className="basket-items">
-            {basket.map((item, index) => (
-  <li key={index} className="basket-item">
-    <img src={item.photo} alt={item.name} className="basket-item-image" />
-    <div className="basket-item-details">
-      <h3>{item.name}</h3>
-      <p>Size: {item.selectedSize}</p>
-      <div className="quantity-controls">
-        <label htmlFor={`quantity-${index}`}>Quantity:</label>
-        <input
-          id={`quantity-${index}`}
-          type="number"
-          min="1"
-          value={item.quantity}
-          onChange={(e) => handleQuantityChange(item.id, item.selectedSize, parseInt(e.target.value))}
-        />
+              {basket.map((item, index) => (
+    <li key={index} className="basket-item">
+      <img src={item.photo} alt={item.name} className="basket-item-image" />
+      <div className="basket-item-details">
+        <h3>{item.name}</h3>
+        <p>Size: {item.selectedSize}</p>
+        <div className="quantity-controls">
+          <label htmlFor={`quantity-${index}`}>Quantity:</label>
+          <input
+            id={`quantity-${index}`}
+            type="number"
+            min="1"
+            value={item.quantity}
+            onChange={(e) => handleQuantityChange(item.id, item.selectedSize, parseInt(e.target.value))}
+          />
+        </div>
+        <div className="price-details">
+          {item.quantity >= 3 ? (
+            <>
+              <p>Original price: <span className="original-price">£{formatPrice(item.unitPrice)}</span></p>
+              {/* <p>Discounted price: <strong>£{formatPrice(item.price)}</strong></p> */}
+              <p>Total for this item: <strong>£{formatPrice(item.price * item.quantity)}</strong></p>
+              <p className="savings">You save: £{formatPrice((item.unitPrice - item.price) * item.quantity)}</p>
+            </>
+          ) : (
+            <>
+              <p>Price: <strong>£{formatPrice(item.unitPrice)}</strong></p>
+              <p>Total for this item: <strong>£{formatPrice(item.unitPrice * item.quantity)}</strong></p>
+            </>
+          )}
+        </div>
+        <button onClick={() => handleRemoveItem(item.id, item.selectedSize)} className="remove-button">Remove</button>
       </div>
-      <div className="price-details">
-        {item.unitPrice !== item.price ? (
-          <>
-            <p>Original price: <span className="original-price">£{formatPrice(item.unitPrice)}</span></p>
-            <p>Discounted price: <strong>£{formatPrice(item.price)}</strong></p>
-          </>
-        ) : (
-          <p>Price: <strong>£{formatPrice(item.price)}</strong></p>
-        )}
-        <p>Total for this item: <strong>£{calculateItemTotal(item)}</strong></p>
-        {item.unitPrice > item.price && (
-          <p className="savings">You save: £{calculateItemSavings(item)}</p>
-        )}
-      </div>
-      <button onClick={() => handleRemoveItem(item.id, item.selectedSize)} className="remove-button">Remove</button>
-    </div>
-  </li>
-))}
+    </li>
+  ))}
             </ul>
             <div className="cart-summary">
               <h3>Order Summary</h3>
@@ -177,4 +185,3 @@ const Cart = () => {
 };
 
 export default Cart;
-
