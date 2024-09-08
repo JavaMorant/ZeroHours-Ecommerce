@@ -125,8 +125,8 @@ function App() {
 
       {/* Social Media Icons */}
       <div id="socials-container">
-        <img src="./assets/img/icons8-instagram-24.png" alt="Instagram" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
-        <img src="./assets/img/icons8-tiktok-24.png" alt="TikTok" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
+        <img src="./assets/img/icons8-instagram-24.png" alt="Instagram" className="icon" onClick={() => window.open('https://www.instagram.com/hourszer0/?hl=en', '_blank')} />
+        <img src="./assets/img/icons8-tiktok-24.png" alt="TikTok" className="icon" onClick={() => window.open('', '_blank')} />
         <img src="./assets/img/icons8-facebook-24.png" alt="Facebook" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
         <img src="./assets/img/icons8-X-50.png" alt="X" className="icon" onClick={() => window.open('https://linkedin.com/in/joseph-macgowan-4a60a42b5', '_blank')} />
       </div>
