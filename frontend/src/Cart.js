@@ -160,7 +160,7 @@ const Cart = () => {
             </>
           ) : (
             <>
-              <p>Price: <strong>£{formatPrice(item.unitPrice)}</strong></p>
+              {/* <p>Price: <strong>£{formatPrice(item.unitPrice)}</strong></p> */}
               <p>Total for this item: <strong>£{formatPrice(item.unitPrice * item.quantity)}</strong></p>
             </>
           )}
