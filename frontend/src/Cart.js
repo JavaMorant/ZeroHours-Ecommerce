@@ -153,7 +153,7 @@ const Cart = () => {
         <div className="price-details">
           {item.quantity >= 3 ? (
             <>
-              <p>Original price: <span className="original-price">£{formatPrice(item.unitPrice)}</span></p>
+              {/* <p>Original price: <span className="original-price">£{formatPrice(item.unitPrice)}</span></p> */}
               {/* <p>Discounted price: <strong>£{formatPrice(item.price)}</strong></p> */}
               <p>Total for this item: <strong>£{formatPrice(item.price * item.quantity)}</strong></p>
               <p className="savings">You save: £{formatPrice((item.unitPrice - item.price) * item.quantity)}</p>

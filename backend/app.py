@@ -29,7 +29,7 @@ CORS(app, resources={r"/*": {
     "methods": ["GET", "POST", "OPTIONS"]
 }}, supports_credentials=True)
 
-stripe.api_key = 'sk_test_51PpWYO2Lpl1R0iboAGzFAsq0DOYkjPpk6tH85n84fLrYpCDYrA3gcWVTsyWjWj0uGGT71l4ShgH6LOk4RB2SJQ3j002hYGjCIl'
+stripe.api_key = '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'
 
 # Initialize Flask-SQLAlchemy
 db.init_app(app)
