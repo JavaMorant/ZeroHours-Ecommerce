@@ -37,8 +37,8 @@ const Cart = () => {
     return typeof price === 'number' ? price.toFixed(2) : '0.00';
   };
 
-  const calculateItemTotal = (item) => formatPrice(item.price * item.quantity);
-  const calculateItemSavings = (item) => formatPrice((item.unitPrice - item.price) * item.quantity);
+  // const calculateItemTotal = (item) => formatPrice(item.price * item.quantity);
+  // const calculateItemSavings = (item) => formatPrice((item.unitPrice - item.price) * item.quantity);
   const calculateTotal = () => formatPrice(basket.reduce((total, item) => total + (item.price * item.quantity), 0));
   const calculateTotalSavings = () => formatPrice(basket.reduce((total, item) => {
     if (item.quantity > 2) {
