@@ -176,7 +176,7 @@ export default function Contact() {
           src="./assets/img/icons8-instagram-24.png" 
           alt="Our Instagram" 
           className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
+          onClick={() => window.location.href='https://www.instagram.com/hourszer0/?hl=en'} 
         />
         <img 
           src="./assets/img/icons8-tiktok-24.png" 
@@ -184,18 +184,7 @@ export default function Contact() {
           className="icon" 
           onClick={() => window.location.href='https://www.tiktok.com/@hourszero'} 
         />
-        <img 
-          src="./assets/img/icons8-facebook-24.png" 
-          alt="Our Facebook" 
-          className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
-        />
-        <img 
-          src="./assets/img/icons8-X-50.png" 
-          alt="Our X" 
-          className="icon" 
-          onClick={() => window.location.href='https://linkedin.com/in/joseph-macgowan-4a60a42b5'} 
-        />
+
       </div>
     </div>
   );
