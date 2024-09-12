@@ -162,7 +162,7 @@ def create_checkout_session():
                 'product_data': {
                     'name': item['name'],
                 },
-                'unit_amount': int(float(item['price']) * 100),  # Stripe expects amount in cents
+                'unit_amount': int((float(item['price'])+5) * 100),  # Stripe expects amount in cents
             },
             'quantity': item['quantity'],
         } for item in data['items']]
