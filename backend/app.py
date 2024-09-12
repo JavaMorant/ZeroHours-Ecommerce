@@ -12,9 +12,9 @@ app.config.from_object(ApplicationConfig())
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = "awanded75@gmail.com"
-app.config['MAIL_PASSWORD'] = "AwandePalace50Park"
-app.config['MAIL_DEFAULT_SENDER'] = "awanded75@gmail.com"
+app.config['MAIL_USERNAME'] = "zerohourbrand@outlook.com"
+app.config['MAIL_PASSWORD'] = "Manpower419"
+app.config['MAIL_DEFAULT_SENDER'] = "zerohourbrand@outlook.com"
 
 mail = Mail(app)
 
@@ -182,6 +182,7 @@ def create_checkout_session():
     
     return jsonify(id=checkout_session.id)
 
+
 @app.route('/send-contact-email', methods=['POST'])
 def send_contact_email():
     data = request.json
@@ -296,8 +297,6 @@ def webhook():
                         db_product.lcount -= item.quantity
                     elif size == 'XL':
                         db_product.xlcount -= item.quantity
-                    elif size == 'XXL':
-                        db_product.xxlcount -= item.quantity
                     elif db_product.type == 'sock':
                         db_product.scount -= item.quantity  # Assuming scount is used for socks
                     
@@ -306,7 +305,6 @@ def webhook():
                     db_product.mcount = max(db_product.mcount, 0)
                     db_product.lcount = max(db_product.lcount, 0)
                     db_product.xlcount = max(db_product.xlcount, 0)
-                    db_product.xxlcount = max(db_product.xxlcount, 0)
 
                 order_item = OrderItem(
                     order_id=new_order.id,
