@@ -156,17 +156,34 @@ def payment_success():
 def create_checkout_session():
     try:
         data = request.json
+
+        # Create line items for products in the basket
         line_items = [{
             'price_data': {
                 'currency': 'gbp',
                 'product_data': {
                     'name': item['name'],
                 },
-                'unit_amount': int((float(item['price'])+5) * 100),  # Stripe expects amount in cents
+                'unit_amount': int(float(item['price']) * 100),  # Price in pence
             },
             'quantity': item['quantity'],
         } for item in data['items']]
 
+        # Add shipping cost as a separate line item
+        shipping_cost = data.get('shippingCost', 0)  # Ensure we get the shipping cost
+        if shipping_cost > 0:
+            line_items.append({
+                'price_data': {
+                    'currency': 'gbp',
+                    'product_data': {
+                        'name': 'Shipping',
+                    },
+                    'unit_amount': int(float(shipping_cost) * 100),  # Shipping cost in pence
+                },
+                'quantity': 1,
+            })
+
+        # Create the Stripe Checkout session
         checkout_session = stripe.checkout.Session.create(
             line_items=line_items,
             mode='payment',
@@ -175,14 +192,13 @@ def create_checkout_session():
             automatic_tax={'enabled': True},
             billing_address_collection='required',
             shipping_address_collection={'allowed_countries': ['GB']},
-            customer_email=data.get('email')  # Add this line to set the customer's email
+            customer_email=data.get('email'),  # Get the customer's email
         )
+
     except Exception as e:
         return jsonify(error=str(e)), 400
     
     return jsonify(id=checkout_session.id)
-
-
 @app.route('/send-contact-email', methods=['POST'])
 def send_contact_email():
     data = request.json

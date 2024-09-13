@@ -8,9 +8,9 @@ import "./Checkout.css";
 const stripePromise = loadStripe('pk_live_51PpWYO2Lpl1R0iboX2DkJl9cuw8zlQddiVqlcQ1009EGx6gGfsWdbx0DvDleO5duzAEKELBqG3nAdBA9DDR1vtnj00QeJBDHi2');
 const apiUrl = "https://zerohours-fbbf2fc61221.herokuapp.com";
 
-// process.env.REACT_APP_API_BASE_URL;
+const SHIPPING_COST = 5.00; // Define your shipping cost here
 
-const ProductDisplay = ({ basket, total, onCheckout }) => (
+const ProductDisplay = ({ basket, total, onCheckout, shippingCost }) => (
   <section className="product-display">
     <h2>Your Order Summary</h2>
     {basket.map((item, index) => (
@@ -24,8 +24,11 @@ const ProductDisplay = ({ basket, total, onCheckout }) => (
         </div>
       </div>
     ))}
+    <div className="shipping">
+      <h3>Shipping: £{shippingCost.toFixed(2)}</h3>
+    </div>
     <div className="total">
-      <h3>Total: £{total.toFixed(2)}</h3>
+      <h3>Total: £{(total + shippingCost).toFixed(2)}</h3>
     </div>
     <button onClick={onCheckout}>
       Proceed to Payment
@@ -64,7 +67,9 @@ export default function Checkout() {
   }, [setBasket, navigate]);
 
   const handleSubmit = async (event) => {
-    
+    // Calculate total including shipping
+    const totalWithShipping = total + SHIPPING_COST;
+
     const response = await fetch(`${apiUrl}/create-checkout-session`, {
       method: 'POST',
       headers: {
@@ -76,6 +81,8 @@ export default function Checkout() {
           price: item.price,
           quantity: item.quantity,
         })),
+        shippingCost: SHIPPING_COST, // Pass the shipping cost to backend
+        totalAmount: totalWithShipping, // Optionally, pass the total amount with shipping
       }),
     });
 
@@ -90,7 +97,7 @@ export default function Checkout() {
       console.log(error);
       setMessage("An error occurred. Please try again.");
     } else {
-      console.log("yay")
+      console.log("yay");
     }
   };
 
@@ -102,12 +109,13 @@ export default function Checkout() {
   const toggleMenu = () => {
     setMenuOpen(prevState => !prevState);
   };
+
   return (
     <>
       {message ? (
         <Message message={message} />
       ) : (
-        <ProductDisplay basket={basket} total={total} onCheckout={handleSubmit} />
+        <ProductDisplay basket={basket} total={total} onCheckout={handleSubmit} shippingCost={SHIPPING_COST} />
       )}
       
       <nav id="desktop-nav">
@@ -167,7 +175,6 @@ export default function Checkout() {
           className="icon" 
           onClick={() => window.location.href='https://www.tiktok.com/@hourszero'} 
         />
-
       </div>
     </>
   );
