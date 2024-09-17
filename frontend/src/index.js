@@ -34,8 +34,8 @@ root.render(
           <Route path="/shipping" element={<Shipping />} /> 
           <Route path="/sizeguide" element={<Size />} /> 
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/checkout/success" element={<SuccessPage />} />
-        <Route path="/checkout/cancel" element={<CancelPage />} />
+          <Route path="/success" element={<SuccessPage />} />
+        <Route path="/cancel" element={<CancelPage />} />
         </Routes>        
       <ToastContainer />
       </Router>            

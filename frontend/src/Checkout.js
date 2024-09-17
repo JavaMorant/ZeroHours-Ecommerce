@@ -4,7 +4,7 @@ import { BasketContext } from './BasketContext';
 import { loadStripe } from '@stripe/stripe-js';
 import "./Checkout.css";
 
-// Make sure to replace with your actual publishable key
+// Replace with your actual publishable key
 const stripePromise = loadStripe('pk_live_51PpWYO2Lpl1R0iboX2DkJl9cuw8zlQddiVqlcQ1009EGx6gGfsWdbx0DvDleO5duzAEKELBqG3nAdBA9DDR1vtnj00QeJBDHi2');
 const apiUrl = "https://zerohours-fbbf2fc61221.herokuapp.com";
 
@@ -13,17 +13,19 @@ const SHIPPING_COST = 5.00; // Define your shipping cost here
 const ProductDisplay = ({ basket, total, onCheckout, shippingCost }) => (
   <section className="product-display">
     <h2>Your Order Summary</h2>
-    {basket.map((item, index) => (
-      <div key={index} className="product">
-        <img src={item.photo} alt={item.name} />
-        <div className="description">
-          <h3>{item.name}</h3>
-          <p>Size: {item.selectedSize}</p>
-          <p>Quantity: {item.quantity}</p>
-          <h5>£{(item.price * item.quantity).toFixed(2)}</h5>
+    <div className="product-list">
+      {basket.map((item, index) => (
+        <div key={index} className="product">
+          <img src={item.photo} alt={item.name} />
+          <div className="description">
+            <h3>{item.name}</h3>
+            <p>Size: {item.selectedSize}</p>
+            <p>Quantity: {item.quantity}</p>
+            <h5>£{(item.price * item.quantity).toFixed(2)}</h5>
+          </div>
         </div>
-      </div>
-    ))}
+      ))}
+    </div>
     <div className="shipping">
       <h3>Shipping: £{shippingCost.toFixed(2)}</h3>
     </div>
@@ -56,7 +58,7 @@ export default function Checkout() {
     if (query.get("success")) {
       setMessage("Order placed! You will receive an email confirmation.");
       setBasket([]); 
-      setTimeout(() => navigate('/'), 3000);
+      setTimeout(() => navigate('/success'), 3000);
     }
     if (query.get("canceled")) {
       setMessage(
@@ -66,8 +68,7 @@ export default function Checkout() {
     }
   }, [setBasket, navigate]);
 
-  const handleSubmit = async (event) => {
-    // Calculate total including shipping
+  const handleSubmit = async () => {
     const totalWithShipping = total + SHIPPING_COST;
 
     const response = await fetch(`${apiUrl}/create-checkout-session`, {
@@ -81,23 +82,19 @@ export default function Checkout() {
           price: item.price,
           quantity: item.quantity,
         })),
-        shippingCost: SHIPPING_COST, // Pass the shipping cost to backend
-        totalAmount: totalWithShipping, // Optionally, pass the total amount with shipping
+        shippingCost: SHIPPING_COST,
+        totalAmount: totalWithShipping,
       }),
     });
 
     const { id } = await response.json();
 
     const stripe = await stripePromise;
-    const { error } = await stripe.redirectToCheckout({
-      sessionId: id,
-    });
+    const { error } = await stripe.redirectToCheckout({ sessionId: id });
 
     if (error) {
       console.log(error);
       setMessage("An error occurred. Please try again.");
-    } else {
-      console.log("yay");
     }
   };
 
@@ -117,7 +114,8 @@ export default function Checkout() {
       ) : (
         <ProductDisplay basket={basket} total={total} onCheckout={handleSubmit} shippingCost={SHIPPING_COST} />
       )}
-      
+
+      {/* Navigation Menus */}
       <nav id="desktop-nav">
         <ul className="nav-links">
           <li><Link to="/shop">SHOP</Link></li>

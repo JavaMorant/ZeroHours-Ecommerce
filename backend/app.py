@@ -9,7 +9,7 @@ from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig())
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_SERVER'] = 'smtp.office365.com'  # Correct SMTP server for Outlook
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = "zerohourbrand@outlook.com"
