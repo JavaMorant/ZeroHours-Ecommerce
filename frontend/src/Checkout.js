@@ -70,7 +70,7 @@ export default function Checkout() {
 
   const handleSubmit = async () => {
     const totalWithShipping = total + SHIPPING_COST;
-
+  
     const response = await fetch(`${apiUrl}/create-checkout-session`, {
       method: 'POST',
       headers: {
@@ -78,7 +78,8 @@ export default function Checkout() {
       },
       body: JSON.stringify({
         items: basket.map(item => ({
-          name: item.name,
+          // Append the size to the name when sending the order details
+          name: `${item.name} (Size: ${item.selectedSize})`,
           price: item.price,
           quantity: item.quantity,
         })),
@@ -86,18 +87,17 @@ export default function Checkout() {
         totalAmount: totalWithShipping,
       }),
     });
-
+  
     const { id } = await response.json();
-
+  
     const stripe = await stripePromise;
     const { error } = await stripe.redirectToCheckout({ sessionId: id });
-
+  
     if (error) {
       console.log(error);
       setMessage("An error occurred. Please try again.");
     }
   };
-
   if (basket.length === 0 && !message) {
     navigate('/shop');
     return null;
