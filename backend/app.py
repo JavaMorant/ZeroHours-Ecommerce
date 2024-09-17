@@ -163,6 +163,9 @@ def create_checkout_session():
                 'currency': 'gbp',
                 'product_data': {
                     'name': item['name'],
+                    'metadata': {  # Include size in metadata
+                    'size': item.get('size')  # Get the size from the client-side order
+                }
                 },
                 'unit_amount': int(float(item['price']) * 100),  # Price in pence
             },
