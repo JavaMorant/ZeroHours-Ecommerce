@@ -155,8 +155,6 @@ def payment_success():
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     try:
-        send_order__email()
-
         data = request.json
 
         # Create line items for products in the basket
@@ -165,9 +163,6 @@ def create_checkout_session():
                 'currency': 'gbp',
                 'product_data': {
                     'name': item['name'],
-                    'metadata': {  # Include size in metadata
-                    'size': item.get('size')  # Get the size from the client-side order
-                }
                 },
                 'unit_amount': int(float(item['price']) * 100),  # Price in pence
             },
@@ -234,7 +229,7 @@ def send_contact_email():
         print(f"Error sending email: {str(e)}")
         return jsonify({'error': 'Failed to send message. Please try again.'}), 500
 
-def send_order_email(order, session):
+def send_order_confirmation_email(order, session):
     try:
         msg = Message("Order Confirmation",
                       recipients=[session.customer_details.email])
@@ -243,11 +238,30 @@ def send_order_email(order, session):
         email_body = f"""
         Thank you for your order!
 
+        Order Details:
+        Order ID: {order.id}
+        Total Amount: £{order.total_amount:.2f}
+
+        Items:
+        """
+
+        for item in session.line_items.data:
+            email_body += f"- {item.description}: £{item.amount_total / 100:.2f}\n"
+
+        email_body += f"""
+        Shipping Address:
+        {session.shipping_details.name}
+        {session.shipping_details.address.line1}
+        {session.shipping_details.address.city}
+        {session.shipping_details.address.postal_code}
+        {session.shipping_details.address.country}
+
         Thank you for shopping with us!
         """
 
         msg.body = email_body
         mail.send(msg)
+        print(f"Order confirmation email sent for order {order.id}")
     except Exception as e:
         print(f"Error sending order confirmation email: {str(e)}")
 
