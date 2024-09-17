@@ -190,8 +190,8 @@ def create_checkout_session():
         checkout_session = stripe.checkout.Session.create(
             line_items=line_items,
             mode='payment',
-            success_url= DOMAIN_NAME + '/checkout?success=true',
-            cancel_url= DOMAIN_NAME + '/checkout?canceled=true',
+            success_url= DOMAIN_NAME + '/checkout?success',
+            cancel_url= DOMAIN_NAME + '/checkout?canceled',
             automatic_tax={'enabled': True},
             billing_address_collection='required',
             shipping_address_collection={'allowed_countries': ['GB']},
