@@ -29,7 +29,7 @@ CORS(app, resources={r"/*": {
     "methods": ["GET", "POST", "OPTIONS"]
 }}, supports_credentials=True)
 
-stripe.api_key = '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'
+stripe.api_key = 'pk_test_51PpWYO2Lpl1R0iboJQ53cfJkTYtZD5ed7IpAdHvVghxBQcvh2UjwtQE0AksqPTKKjLPMJ0GryqTZH3CVjSKAorKh00AMEf0Py3'
 
 # Initialize Flask-SQLAlchemy
 db.init_app(app)
@@ -159,15 +159,18 @@ def create_checkout_session():
 
         # Create line items for products in the basket
         line_items = [{
-            'price_data': {
-                'currency': 'gbp',
-                'product_data': {
-                    'name': item['name'],
-                },
-                'unit_amount': int(float(item['price']) * 100),  # Price in pence
+        'price_data': {
+            'currency': 'gbp',
+            'product_data': {
+                'name': item['name'],
+                'metadata': {  # Include size in metadata
+                    'size': item.get('size', 'N/A')  # Get the size from the client-side order
+                }
             },
-            'quantity': item['quantity'],
-        } for item in data['items']]
+            'unit_amount': int(float(item['price']) * 100),  # Price in pence
+        },
+        'quantity': item['quantity'],
+    } for item in data['items']]
 
         # Add shipping cost as a separate line item
         shipping_cost = data.get('shippingCost', 0)  # Ensure we get the shipping cost
@@ -187,8 +190,8 @@ def create_checkout_session():
         checkout_session = stripe.checkout.Session.create(
             line_items=line_items,
             mode='payment',
-            success_url= DOMAIN_NAME + '/checkout?success=true',
-            cancel_url= DOMAIN_NAME + '/checkout?canceled=true',
+            success_url= DOMAIN_NAME + '/?success=true',
+            cancel_url= DOMAIN_NAME + '/?canceled=true',
             automatic_tax={'enabled': True},
             billing_address_collection='required',
             shipping_address_collection={'allowed_countries': ['GB']},
@@ -297,12 +300,12 @@ def webhook():
             db.session.flush()
 
             for item in session_with_items.line_items.data:
-                product = stripe.Product.retrieve(item.price.product)
-                size = product.metadata.get('size', 'N/A')
+                product = stripe.Product.retrieve(item.price.product)  # Retrieve product data from Stripe
+                size = item.price.product_data.metadata.get('size', 'N/A')  # Retrieve the size from metadata
 
                 # Retrieve the corresponding product from our database
                 db_product = Products.query.filter_by(stripe_product_id=item.price.product).first()
-                
+
                 if db_product:
                     # Update inventory based on size
                     if size == 'S':
@@ -315,23 +318,24 @@ def webhook():
                         db_product.xlcount -= item.quantity
                     elif db_product.type == 'sock':
                         db_product.scount -= item.quantity  # Assuming scount is used for socks
-                    
+
                     # Ensure counts don't go below zero
                     db_product.scount = max(db_product.scount, 0)
                     db_product.mcount = max(db_product.mcount, 0)
                     db_product.lcount = max(db_product.lcount, 0)
                     db_product.xlcount = max(db_product.xlcount, 0)
 
+                # Add order item to the database
                 order_item = OrderItem(
                     order_id=new_order.id,
                     product_id=db_product.id if db_product else None,
                     quantity=item.quantity,
                     price=item.amount_total / 100,
-                    size=size
+                    size=size  # Store size in order item
                 )
                 db.session.add(order_item)
 
-            db.session.commit()
+             
             print(f"Order created successfully: {new_order.id}")
 
             # Send order confirmation email
