@@ -78,7 +78,6 @@ export default function Checkout() {
       },
       body: JSON.stringify({
         items: basket.map(item => ({
-          // Append the size to the name when sending the order details
           name: `${item.name} (Size: ${item.selectedSize})`,
           price: item.price,
           quantity: item.quantity,

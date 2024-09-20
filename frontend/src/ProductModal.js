@@ -53,7 +53,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
     }
   };
 
-  const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL', 'One Size'];
+  const sizeOrder = ['S', 'M', 'L', 'XL', 'One Size'];
   const sortedSizes = sizeOrder
     .filter(size => product.sizes[size] !== undefined)
     .map(size => ({ size, count: product.sizes[size] }));
