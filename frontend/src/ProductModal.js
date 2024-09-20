@@ -6,7 +6,7 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openDropdown, setOpenDropdown] = useState(null);
-  
+
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.key === 'Escape') {
@@ -20,7 +20,12 @@ const ProductModal = ({ product, onClose, addToBasket }) => {
 
   if (!product) return null;
 
-  const images = [product.photo, ...(Array.isArray(product.hover_images) ? product.hover_images : [])];
+  // Generate hover image URLs based on folder path and expected filenames
+  const baseImageUrl = product.hover_images; // Folder path
+  const hoverImages = Array.from({ length: 6 }, (_, i) => `${baseImageUrl}/${i + 1}.jpg`);
+
+  // Combine product's main photo and hover images
+  const images = [product.photo, ...hoverImages];
 
   const nextImage = () => {
     setCurrentImageIndex((currentImageIndex + 1) % images.length);

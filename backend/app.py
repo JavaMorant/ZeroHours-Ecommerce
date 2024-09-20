@@ -50,12 +50,6 @@ def options():
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     return response
 
-def get_hover_images(product_name):
-    folder_path = os.path.join('../frontend/public/Assets/img/', product_name)
-    if not os.path.exists(folder_path):
-        return []
-    return [url_for('serve_hover_image', product_name=product_name, filename=img) for img in os.listdir(folder_path)]
-
 def size_option(product):
     if product.type == 'sock':
         return {'One Size': product.scount}
@@ -64,7 +58,6 @@ def size_option(product):
         'M': product.mcount,
         'L': product.lcount,
         'XL': product.xlcount,
-        'XXL': product.xxlcount,
     }
 
 @app.route('/products', methods=['GET'])
@@ -76,7 +69,7 @@ def get_products():
         'name': product.name,
         'price': product.price,
         'photo': product.photo,
-        'hover_images': get_hover_images(product.hover_image),
+        'hover_images': product.hover_image,
         'sizes': size_option(product),
         'description': product.description
     } for product in products]
